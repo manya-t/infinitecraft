@@ -1,0 +1,12 @@
+first_input,second_input,output,real
+goldfish,goldfish,pond,TRUE
+pond,lake,ocean,TRUE
+ocean,pond,lake,TRUE
+lake,fishing,fish,TRUE
+Poseidon,fish,mermaid,TRUE
+Loch Ness monster,mermaid,Nessie,TRUE
+Loch Ness monster,human,Nessie,TRUE
+human,Nessie,mermaid,TRUE
+Aphrodite,mermaid,siren,TRUE
+jail,siren,prison,TRUE
+prison,criminal,jail,TRUE

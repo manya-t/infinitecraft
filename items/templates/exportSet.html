@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <form class="form-inline" method="post" action="{% url 'exportSet' %}">
+        {% csrf_token %}
+        <div class="input-group col-6 mx-sm-3 mb-2">
+            <input type="text" class="form-control" placeholder="Enter items here" name="item_list">
+        </div>
+        <button type="submit" class="btn btn-primary mb-2">Submit</button>
+    </form>
+    {% for str in export %}
+        {{str}}<br>
+    {% endfor %}
+{% endblock %}

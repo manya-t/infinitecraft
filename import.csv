@@ -1,0 +1,85 @@
+first_input,second_input,output,real
+bird,plane,airplane,TRUE
+bird,airplane,plane,TRUE
+Cinderella,princess,fairy tale,TRUE
+fairy tale,fairy tale,story,TRUE
+history,story,myth,TRUE
+myth,dragon,wyvern,TRUE
+wyvern,wyvern,wyvern,TRUE
+dragon,wyvern,hydra,TRUE
+wyvern,hydra,dragon,TRUE
+Glaurung,dragon,Smaug,TRUE
+Glaurung,Smaug,dragon,TRUE
+scales,dragon,armor,TRUE
+armor,armor,shield,TRUE
+shield,shield,tower,TRUE
+tower,tower,castle,TRUE
+chateau,castle,palace,TRUE
+palace,mirage,oasis,TRUE
+cactus,oasis,desert,TRUE
+desert,Gollum,ring,TRUE
+Turgon,ring,Nenya,TRUE
+Nenya,elf,Galadriel,TRUE
+artist,Galadriel,elf,TRUE
+elf,Smaug,dragon,TRUE
+dragon slayer,dragon,dragon slayer,TRUE
+dragon slayer,Turin,Aragorn,TRUE
+Túrin,Aragorn,Legolas,TRUE
+Aragorn,Legolas,friendship,TRUE
+Legolas,friendship,Gimli,TRUE
+Gimli,friendship,Legolas,TRUE
+Legolas,elf,Orlando Bloom,TRUE
+Orlando Bloom,elf,Legolas,TRUE
+The Silmarillion,Legolas,elf,TRUE
+elf,gnome,goblin,TRUE
+goblin,goblin,goblin king,TRUE
+goblin king,goblin king,goblin king,TRUE
+goblin,goblin king,goblin army,TRUE
+goblin army,goblin army,goblin king,TRUE
+goblin army,goblin king,goblin army,TRUE
+goblin,goblin army,goblin king,TRUE
+goblin king,human,goblin,TRUE
+gnome,goblin,hobbit,TRUE
+The Two Towers,hobbit,Gollum,TRUE
+nerd,Gollum,hobbit,TRUE
+king,hobbit,Lord of the Rings,TRUE
+Lord of the Rings,Gimli,dwarf,TRUE
+King Under the Mountain,dwarf,Thorin,TRUE
+Thorin,Thorin,Thorin,TRUE
+Jupiter,Thorin,thunder,TRUE
+Thorin,thunder,thunderin,FALSE
+Thorin,The Hobbit,Bilbo,TRUE
+Thorin,Bilbo,The Hobbit,TRUE
+paladin,judge,justice,TRUE
+crime,justice,punishment,TRUE
+punishment,punishment,punishment,TRUE
+crime,punishment,prison,TRUE
+prison,zoo,jail,TRUE
+criminal,jail,prisoner,TRUE
+criminal,prisoner,jail,TRUE
+wall,jail,prison,TRUE
+punishment,prison,jail,TRUE
+fence,jail,prison,TRUE
+crime,prison,punishment,TRUE
+justice,punishment,prison,TRUE
+justice,prison,jail,TRUE
+zoo,jail,prison,TRUE
+prison,human,criminal,TRUE
+criminal,criminal,thief,TRUE
+pirate,thief,ninja,TRUE
+pirate,ninja,[not],FALSE
+thief,ninja,robber,TRUE
+robber,robber,thief,TRUE
+thief,archer,Robin Hood,TRUE
+robber,thief,criminal,TRUE
+citizen,criminal,judge,TRUE
+judge,court,trial,TRUE
+trial,trial,error,TRUE
+error,error,error,TRUE
+trial,error,error,TRUE
+error,human,robot,TRUE
+factory,robot,robot,TRUE
+Industrial Revolution,robot,steampunk,TRUE
+atlantis,steampunk,steamlantis,FALSE
+steamlantis,steamlantis,steamland,FALSE
+steamland,steamland,steamland,FALSE

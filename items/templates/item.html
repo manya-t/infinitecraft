@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <h2>{{item.name}}</h2>
+    <b>Simplest way to make:</b>
+    <br>{{item.simplestWayToMake}}
+    <br><br>
+
+    <b>All ways to make:</b>
+    <br>
+    {% for tr in as_output %}
+        {{tr}}<br>
+    {% endfor %}
+    <br>
+    <b>Makes:</b>
+    <br>
+    {% for tr in makes %}
+        {{tr}}<br>
+    {% endfor %}
+    <br>
+    <b>Gaps:</b> 
+    <br>{{gaps|safe}}
+    <br>
+    <b>Export:</b>
+    <br>
+    {% for str in related %}
+        {{str}}<br>
+    {% endfor %}
+{% endblock %}
