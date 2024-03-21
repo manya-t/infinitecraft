@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from .models import Item, InputDoesNotExist, Transformation
 from .views import newTransformation, randomGap
 from random import choice
@@ -63,3 +63,16 @@ class ItemsTestCase(TestCase):
         self.assertEqual(message, "New Item: next2 (3)<br>root1 (1) + next1 (2) = next2 (3)<br>root1 (1) + next2 (3) = ???<br>next1 (2) + next2 (3) = ???<br>next2 (3) + next2 (3) = ???<br>")
         gaps = Item.fetch("next1").gaps()
         self.assertEqual(gaps, "root2 (1) + next1 (2) = ???<br>next1 (2) + next1 (2) = ???<br>next1 (2) + next2 (3) = ???<br>")
+
+    def test_index(self):
+        c = Client()
+        response = c.get("")
+        self.assertEqual(response.status_code, 200)
+
+    def test_item_page(self):
+        c = Client()
+        response = c.get("/item/1")
+        self.assertEqual(response.status_code, 200)
+        print(response.context)
+        response = c.get("/item/root1")
+        self.assertEqual(response.status_code, 200)

@@ -25,7 +25,8 @@ def items(request):
     return render(request, "items.html", {"items" : all_items})
 
 def gaps(request):
-    last_gap = lastGap()
+    #last_gap = lastGap()
+    last_gap = []
     random_gap = randomGap()
     return render(request, "gaps.html", {
         "last_gap": last_gap,
@@ -38,7 +39,6 @@ def item(request, id):
     makes = item.makes()
     gaps = item.gaps()
     related = [tr.export() for tr in as_output | makes]
-    related 
     return render(request, "item.html", {
         "item": item,
         "as_output": as_output,
@@ -51,8 +51,8 @@ def itemByName(request, name):
     return item(request, Item.fetch(name).id)
 
 def export(request):
-    #CUTOFF = datetime(year=2024, month=3,day=7)timeUpdated__gte=CUTOFF,
-    items = Item.objects.filter(isReal=True, tier__gt=1)
+    CUTOFF = datetime(year=2024, month=3,day=16)
+    items = Item.objects.filter(timeUpdated__gte=CUTOFF,isReal=True, tier__gt=1)
     data = [item.simplestWayToMake.export() for item in items]
     return render(request, "export.html", {"data" : data})
 

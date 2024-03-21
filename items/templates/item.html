@@ -21,6 +21,16 @@
     <b>Gaps:</b> 
     <br>{{gaps|safe}}
     <br>
+    <b>Chain:</b>
+    <br>
+    {% for tr in makes %}
+        {% if tr.first_input.name == item.name %}
+            {{tr.second_input}}->{{tr.output}}<br>
+        {% else %}
+            {{tr.first_input}}->{{tr.output}}<br>
+        {% endif %}
+    {% endfor %}
+    <br>
     <b>Export:</b>
     <br>
     {% for str in related %}

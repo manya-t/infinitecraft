@@ -8,7 +8,7 @@ WHERE t.id<10
 ORDER BY t.id */
  
 --missing
-/* SELECT i1.name, i1.tier, i2.name, i2.tier, o.name, o.tier, o.isReal
+SELECT i1.name, i1.tier, i2.name, i2.tier, o.name, o.tier, o.isReal
 FROM
 items_item i1
 CROSS JOIN items_item i2
@@ -17,7 +17,7 @@ LEFT JOIN items_transformation t on
     OR (t.first_input_id=i2.id and t.second_input_id = i1.id)
 LEFT JOIN items_item o on o.id = t.output_id
 WHERE i1.tier<=3 and i2.tier<=3 and t.id is null
-ORDER BY i1.tier+i2.tier, i1.tier, i2.tier, i2.id */
+ORDER BY i1.tier+i2.tier, i1.tier, i2.tier, i2.id
 
 
 --recently newly made or optimized items
@@ -42,12 +42,10 @@ o.timeUpdated>'2024-03-05 12:00:00' and
 o.isReal
 ORDER BY o.tier */
 
-SELECT i1.name, i1.tier, i2.name, i2.tier, t.id
+/* SELECT i1.name, i1.tier, i2.name, i2.tier, t.id
 from items_transformation t
 join items_item i1 on t.first_input_id = i1.id
 join items_item i2 on t.second_input_id = i2.id
 join items_item o on o.id = t.output_id
 where (i1.tier > i2.tier) or (i1.tier=i2.tier and i1.name>i2.name)
-order by i1.tier, i2.tier
-
-SELECT * from items_items
+order by i1.tier, i2.tier */
