@@ -73,6 +73,5 @@ class ItemsTestCase(TestCase):
         c = Client()
         response = c.get("/item/1")
         self.assertEqual(response.status_code, 200)
-        print(response.context)
         response = c.get("/item/root1")
         self.assertEqual(response.status_code, 200)

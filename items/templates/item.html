@@ -2,26 +2,36 @@
 
 {% block body %}
     <h2>{{item.name}}</h2>
-    <b>Simplest way to make:</b>
-    <br>{{item.simplestWayToMake}}
+
+    <h4>Real?</h4>
+    {% if item.isReal %}
+        Real!
+    {% else %}
+        Fake!
+    {% endif %}
+
+    <h4>Simplest way to make:</h4>
+    {{item.simplestWayToMake}}
     <br><br>
 
-    <b>All ways to make:</b>
-    <br>
+    <h4>All ways to make:</h4>
     {% for tr in as_output %}
         {{tr}}<br>
     {% endfor %}
     <br>
-    <b>Makes:</b>
+
+    <h4>Makes:</h4>
     <br>
     {% for tr in makes %}
         {{tr}}<br>
     {% endfor %}
     <br>
-    <b>Gaps:</b> 
+
+    <h4>Gaps:</h4>
     <br>{{gaps|safe}}
     <br>
-    <b>Chain:</b>
+
+    <h4>Chain:</h4>
     <br>
     {% for tr in makes %}
         {% if tr.first_input.name == item.name %}
@@ -31,7 +41,8 @@
         {% endif %}
     {% endfor %}
     <br>
-    <b>Export:</b>
+
+    <h4>Export:</h4>
     <br>
     {% for str in related %}
         {{str}}<br>
