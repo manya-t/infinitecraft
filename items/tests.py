@@ -2,10 +2,10 @@ from django.test import TestCase, Client
 from .models import Item, InputDoesNotExist, Transformation, ItemPair
 from .views import newTransformation, randomGap
 from random import choice
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-import pathlib
-import os
+#from selenium import webdriver
+#from selenium.webdriver.common.by import By
+#import pathlib
+#import os
 
 # Create your tests here.
 
