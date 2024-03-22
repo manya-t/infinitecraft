@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 class Item(models.Model):
     name = models.TextField(unique=True)
+    emoji = models.TextField(null=True)
     timeCreated = models.DateTimeField(auto_now_add=True)
     timeUpdated = models.DateTimeField(auto_now=True)
     tier = models.IntegerField()

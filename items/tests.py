@@ -2,8 +2,18 @@ from django.test import TestCase, Client
 from .models import Item, InputDoesNotExist, Transformation
 from .views import newTransformation, randomGap
 from random import choice
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import pathlib
+import os
 
 # Create your tests here.
+
+def file_uri(filename):
+    return pathlib.Path(os.path.abspath(filename)).as_uri()
+
+# Sets up web driver using Google chrome
+driver = webdriver.Chrome()
 
 class ItemsTestCase(TestCase):
 
@@ -75,3 +85,18 @@ class ItemsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         response = c.get("/item/root1")
         self.assertEqual(response.status_code, 200)
+
+    """ def test_input_new_tr(self):
+        path = r"items\templates\index.html"
+        print(file_uri(path))
+        driver.get(file_uri(path))
+        first_input_field = driver.find_element(By.NAME, "first_input")
+        second_input_field = driver.find_element(By.NAME, "second_input")
+        output_field = driver.find_element(By.NAME, "output")
+        first_input_field.send_keys("root1")
+        second_input_field.send_keys("root2")
+        output_field.send_keys("next1")
+        driver.find_element(By.ID, "submitNew").click()
+        next1 = Item.objects.get(name="next1")
+        tr = Transformation.objects.get(first_input__name="root1", second_input__name="root2")
+        self.assertEqual(tr, next1.simplestWayToMake) """
