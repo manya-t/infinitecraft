@@ -1,6 +1,7 @@
-from items.views import newTransformation, checkForTransformation, lastGap, randomGap
-from items.models import Item, Transformation
-
+from items.models import Item, InputDoesNotExist, Transformation, ItemPair
+from items.views import newTransformation, randomGap
+i = Item.fetch('Gollum')
+i.gaps()
 
     items_df = pd.read_sql("SELECT * FROM items_item",db_con)
     tr_df = pd.read_sql("SELECT * FROM items_transformation",db_con)

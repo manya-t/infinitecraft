@@ -14,51 +14,54 @@ class Item(models.Model):
         return f"{self.name} ({self.tier})"
     
     def makes(self):
-        q_first = models.Q(first_input = self)
-        q_second = models.Q(second_input = self)
-        return Transformation.objects.filter(q_first | q_second).all().order_by(
-            "second_input__tier", "first_input__tier", "first_input__name", "second_input__name")
+        as_first = Transformation.objects.filter(input_pair__first_input=self)
+        as_second = Transformation.objects.filter(input_pair__second_input=self)
+        ordered = (as_first.all() | as_second.all()).order_by(
+            "input_pair__second_input__tier", 
+            "input_pair__first_input__tier", 
+            "input_pair__first_input__name", 
+            "input_pair__second_input__name")
+        return ordered
+
+    def related(self):
+        return self.makes() | self.as_output.all()   
     
     def fetch(name):
         return Item.objects.get(name=name)
     
-    def sortAndCheck(unsorted):
-        sorted = ItemPair.orderItems(unsorted)
-        try:
-            tr = Transformation.objects.get(first_input=sorted[0], second_input=sorted[1])
-            return [True, tr]
-        except Transformation.DoesNotExist:
-            return [False, sorted]
-    
     def gaps(self):        
-        result = []
-        for tr in self.makes().all():
-            sorted_and_bool = Item.sortAndCheck([self, tr.output])
-            if not sorted_and_bool[0] and tr.output.isReal:
-                result.append(sorted_and_bool[1])
+        to_check = []
+
+        for tr in self.makes():
+            if tr.output.isReal:
+                pair = ItemPair.getOrMakePairFromList([self, tr.output])
+                if pair.from_AB_C is None:
+                    pair.from_AB_C = tr
+                    pair.save()
+                to_check.append(pair)
+
         for tr in self.as_output.all():
-            sorted_and_bool = Item.sortAndCheck([tr.first_input, self])
-            if not sorted_and_bool[0] and tr.first_input.isReal:
-                result.append(sorted_and_bool[1])
-            sorted_and_bool = Item.sortAndCheck([tr.second_input, self])
-            if not sorted_and_bool[0] and tr.second_input.isReal:
-                result.append(sorted_and_bool[1])
-        sorted_and_bool = Item.sortAndCheck([self, self])
-        if not sorted_and_bool[0]:
-            result.append(sorted_and_bool[1])
-        result.sort(key= lambda list: list[0].tier)
-        result.sort(key= lambda list: list[1].tier)
-        resultString = ''
-        for pair in result:
-            resultString += f"{pair[0]} + {pair[1]} = ???<br>"
-        return resultString
+            if tr.output.isReal:
+                pair1 = ItemPair.getOrMakePairFromList([self, tr.input_pair.first_input])
+                pair2 = ItemPair.getOrMakePairFromList([self, tr.input_pair.second_input])
+                for pair in [pair1, pair2]:
+                    if pair.from_AB_C is None:
+                        pair.from_AB_C = tr
+                        pair.save()
+                    to_check.append(pair)
+        
+        square = ItemPair.getOrMakePairFromList([self,self])
+        to_check.append(square)
+
+        result = [pair for pair in to_check if pair.as_inputs.count()==0]
+        return ItemPair.dedupeAndSortPairs(result)
     
-    def gapFrom(first, second):
+    """ def gapFrom(first, second):
         firstAndOutput = Transformation.objects.filter(first_input__name=first, output__name=second)
         secondAndOutput = Transformation.objects.filter(second_input__name=first, output__name=second)
         outputAndFirst = Transformation.objects.filter(output__name=first, first_input__name=second)
         outputAndSecond = Transformation.objects.filter(output__name=first, second_input__name=second)
-        return firstAndOutput.union(secondAndOutput).union(outputAndFirst).union(outputAndSecond)
+        return firstAndOutput.union(secondAndOutput).union(outputAndFirst).union(outputAndSecond) """
 
     def recursiveMake(self, minTier=1, currentResult=[]):
         if minTier < 1:
@@ -70,9 +73,10 @@ class Item(models.Model):
             simplest = self.simplestWayToMake
             if simplest not in currentResult:
                 currentResult.append(simplest)
-                simplest.first_input.recursiveMake(minTier=minTier, currentResult=currentResult)
-                simplest.second_input.recursiveMake(minTier=minTier, currentResult=currentResult)
-            return Transformation.dedupeListOfTr(currentResult)
+                simplest.input_pair.first_input.recursiveMake(minTier=minTier, currentResult=currentResult)
+                simplest.input_pair.second_input.recursiveMake(minTier=minTier, currentResult=currentResult)
+            currentResult = list(set(currentResult))
+            return currentResult
 
     
 class InputDoesNotExist(Item.DoesNotExist):
@@ -81,8 +85,9 @@ class InputDoesNotExist(Item.DoesNotExist):
         super().__init__(msg, *args)
 
 class Transformation(models.Model):
-    first_input = models.ForeignKey(Item, on_delete = models.CASCADE, related_name = "as_first_input") 
-    second_input = models.ForeignKey(Item, on_delete = models.CASCADE, related_name = "as_second_input")
+    first_input = models.ForeignKey(Item, on_delete = models.CASCADE, related_name = "as_first_input", null=True) 
+    second_input = models.ForeignKey(Item, on_delete = models.CASCADE, related_name = "as_second_input", null=True)
+    input_pair = models.ForeignKey("items.ItemPair", on_delete = models.CASCADE, related_name = "as_inputs")
     output = models.ForeignKey(Item, on_delete = models.CASCADE, related_name = "as_output")
     timeCreated = models.DateTimeField(auto_now_add=True)
     timeUpdated = models.DateTimeField(auto_now=True)
@@ -98,7 +103,7 @@ class Transformation(models.Model):
     def updateTier(self):
         message = ""
         # this SHOULD always be the second one, but just in case
-        trTier = max(self.first_input.tier,self.second_input.tier) + 1
+        trTier = max(self.input_pair.first_input.tier, self.input_pair.second_input.tier) + 1
         output = self.output
 
         if trTier < output.tier:
@@ -112,25 +117,66 @@ class Transformation(models.Model):
             message +=f"Now: {self}<br>"
 
             for t in output.makes():
-                t.checkOrder()
+                t.input_pair.checkOrder()
                 message += t.updateTier()
 
         return message
+
+    def export(self):
+        return f"{self.second_input}->{self.first_input}->{self.output}"
     
-    def dedupeListOfTr(list):
-        list.sort(key = lambda tr: tr.first_input.name)
-        list.sort(key = lambda tr: tr.second_input.name)
-        list.sort(key = lambda tr: tr.first_input.tier)
-        list.sort(key = lambda tr: tr.second_input.tier)
+class ItemPair(models.Model):
+    first_input = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="as_first_in_pair")
+    second_input = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="as_second_in_pair")
+    from_AB_C = models.ForeignKey(Transformation, on_delete=models.SET_NULL, related_name="to_other_pair", null=True)
 
-        prev = list[0]
-        for tr in list[1:]:
-            if tr == prev:
-                list.remove(tr)
-            else:
-                prev = tr
-        return list
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=("first_input", "second_input"), name="unique_pair")
+        ]
 
+    def __str__(self) -> str:
+        if self.as_inputs.count() > 0:
+            return str(self.as_inputs.all()[0])
+        else:
+            return f"{self.first_input} + {self.second_input} = ???"
+
+    def pairFromStrings(first_input, second_input):
+        item_list = []
+        for name in [first_input, second_input]:
+            try:
+                item_list.append(Item.objects.get(name=name))
+            except Item.DoesNotExist:
+                raise InputDoesNotExist(name=name)
+        pair = ItemPair.getOrMakePairFromList(item_list)
+        return pair
+    
+    def getOrMakePairFromList(item_list):
+        item_list = ItemPair.orderItems(item_list)
+        try:
+            pair = ItemPair.objects.get(first_input=item_list[0], second_input=item_list[1])
+        except ItemPair.DoesNotExist:
+            pair = ItemPair(first_input=item_list[0], second_input=item_list[1])
+            pair.save()
+        return pair
+    
+    def orderItems(item_list):
+        item_list.sort(key= lambda item: item.name)
+        item_list.sort(key= lambda item: item.tier)
+        return item_list
+
+    def dedupeAndSortPairs(pair_list):
+        pair_list = list(set(pair_list))
+        pair_list = ItemPair.sortListOfPairs(pair_list)
+        return pair_list
+    
+    def sortListOfPairs(pair_list):
+        pair_list.sort(key = lambda pair: pair.first_input.name)
+        pair_list.sort(key = lambda pair: pair.second_input.name)
+        pair_list.sort(key = lambda pair: pair.first_input.tier)
+        pair_list.sort(key = lambda pair: pair.second_input.tier)
+        return pair_list
+    
     def checkOrder(self):
         ordered = ItemPair.orderItems([self.first_input, self.second_input])
         if self.first_input == ordered[0] and self.second_input == ordered[1]:
@@ -139,28 +185,3 @@ class Transformation(models.Model):
             self.first_input = ordered[0]
             self.second_input = ordered[1]
             self.save()
-
-    def export(self):
-        return f"{self.second_input}->{self.first_input}->{self.output}"
-    
-class ItemPair(models.Model):
-    first_input = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="as_first_in_pair")
-    second_input = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="as_second_in_pair")
-    transformation = models.ForeignKey(Transformation, on_delete=models.CASCADE, related_name="transformation", null=True)
-
-
-    def pairFromStrings(first_input, second_input):
-        list = []
-        for name in [first_input, second_input]:
-            try:
-                list.append(Item.objects.get(name=name))
-            except Item.DoesNotExist:
-                raise InputDoesNotExist(name=name)
-        ItemPair.orderItems(list)
-        pair = ItemPair(first_input=list[0], second_input=list[1])
-        return pair
-    
-    def orderItems(list):
-        list.sort(key= lambda item: item.name)
-        list.sort(key= lambda item: item.tier)
-        return list

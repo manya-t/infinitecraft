@@ -68,30 +68,20 @@ def exportSet(request):
         items = request.POST["item_list"].split(",")
         items = [s.strip() for s in items]
         outputs = Transformation.objects.filter(output__name__in=items)
-        first_inputs = Transformation.objects.filter(first_input__name__in=items)
-        second_inputs = Transformation.objects.filter(second_input__name__in=items)
+        first_inputs = Transformation.objects.filter(input_pair__first_input__name__in=items)
+        second_inputs = Transformation.objects.filter(input_pair__second_input__name__in=items)
         export = [tr.export() for tr in outputs | first_inputs | second_inputs]
     return render(request, "exportSet.html", {"export": export})
-
-def stringsToOrderedObjects(first_input, second_input):
-    list = []
-    for name in [first_input, second_input]:
-        try:
-            list.append(Item.objects.get(name=name))
-        except Item.DoesNotExist:
-            raise InputDoesNotExist(name=name)
-    return ItemPair.orderItems(list)
-
 
 def newTransformation(first_input, second_input, output, isReal=1):
     message = ''
     try:   
-        inputs = stringsToOrderedObjects(first_input, second_input)
+        input_pair = ItemPair.pairFromStrings(first_input, second_input)
     except InputDoesNotExist as error:
         return error
 
     try:
-        existing_tr = Transformation.objects.get(first_input=inputs[0], second_input=inputs[1])
+        existing_tr = Transformation.objects.get(input_pair=input_pair)
         if existing_tr.output.name == output:
             message += f"This transformation already exists! {existing_tr}<br>"
             existing_tr.updateTier()
@@ -104,12 +94,12 @@ def newTransformation(first_input, second_input, output, isReal=1):
         try:
             output = Item.objects.get(name=output)
         except Item.DoesNotExist:
-            tier = max(inputs[0].tier, inputs[1].tier) + 1
+            tier = max(input_pair.first_input.tier, input_pair.second_input.tier) + 1
             output = Item(name=output, tier=tier, isReal=isReal)
             output.save()
             message += f"New Item: {output}<br>"
                     
-        transformation = Transformation(first_input=inputs[0], second_input=inputs[1], output=output)
+        transformation = Transformation(input_pair=input_pair, first_input=input_pair.first_input, second_input=input_pair.second_input, output=output)
         transformation.save()
         message += f"{transformation}<br>"
 
@@ -120,23 +110,25 @@ def newTransformation(first_input, second_input, output, isReal=1):
         message += transformation.updateTier()
         
         if not output.isReal:
-            message += inputs[0].gaps()
+            for pair in input_pair.first_input.gaps():
+                message += pair
+                message +="<br>"
             message += "<br>"
-            message += inputs[1].gaps()
+            for pair in input_pair.second_input.gaps():
+                message += pair
+                message +="<br>"
             return message
         else:
-            message += output.gaps()
+            for pair in output.gaps():
+                message += str(pair)
+                message +="<br>"
             return message
 
 
 def checkForTransformation(first_input, second_input):
-        inputs = stringsToOrderedObjects(first_input, second_input)
-        try:
-            print(Transformation.objects.get(first_input=inputs[0], second_input=inputs[1]))
-            return True
-        except Transformation.DoesNotExist:
-            print(f"Transformation {first_input}, {second_input} does not exist")
-            return False
+    input_pair = ItemPair.pairFromStrings(first_input, second_input)
+    print(input_pair)
+    return input_pair.as_inputs.count() > 0
         
 def capitalize(caps_specified):
         result = []
@@ -191,3 +183,11 @@ def mergeTr(id1, id2):
             print(f"{item}: {item.simplestWayToMake}")
             print(incorrect.is_simplest_to_make.all())
         incorrect.delete()
+
+def populatePairs():
+    all_tr = Transformation.objects.all()
+    for tr in all_tr:
+        pair = ItemPair(first_input=tr.first_input, second_input=tr.second_input)
+        pair.save()
+        tr.input_pair = pair
+        tr.save()

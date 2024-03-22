@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from .models import Item, InputDoesNotExist, Transformation
+from .models import Item, InputDoesNotExist, Transformation, ItemPair
 from .views import newTransformation, randomGap
 from random import choice
 from selenium import webdriver
@@ -9,11 +9,11 @@ import os
 
 # Create your tests here.
 
-def file_uri(filename):
+""" def file_uri(filename):
     return pathlib.Path(os.path.abspath(filename)).as_uri()
 
 # Sets up web driver using Google chrome
-driver = webdriver.Chrome()
+driver = webdriver.Chrome() """
 
 class ItemsTestCase(TestCase):
 
@@ -45,7 +45,7 @@ class ItemsTestCase(TestCase):
             self.make_new_random_tr()
         all_tr = Transformation.objects.all()
         for tr in all_tr:
-            self.assertLessEqual(tr.first_input.tier, tr.second_input.tier)
+            self.assertLessEqual(tr.input_pair.first_input.tier, tr.input_pair.second_input.tier)
 
     def test_simplest_tier_correct(self):
         for i in range(200):
@@ -56,14 +56,14 @@ class ItemsTestCase(TestCase):
             if item.simplestWayToMake is None:
                 self.assertEqual(item.tier, 1, f"\ntrs: {trs}\nitem: {item}")
             else:
-                self.assertEqual(item.tier, item.simplestWayToMake.second_input.tier+1, f"\ntrs: {trs}\nitem: {item}\nsimplest: {item.simplestWayToMake}")
+                self.assertEqual(item.tier, item.simplestWayToMake.input_pair.second_input.tier+1, f"\ntrs: {trs}\nitem: {item}\nsimplest: {item.simplestWayToMake}")
 
     def test_simplest_is_simplest(self):
         for i in range(200):
             self.make_new_random_tr()
         all_tr = Transformation.objects.all()
         for tr in all_tr:
-            tr_tier = tr.second_input.tier + 1
+            tr_tier = tr.input_pair.second_input.tier + 1
             self.assertLessEqual(tr.output.tier, tr_tier)
 
     def test_gaps(self):
@@ -72,7 +72,10 @@ class ItemsTestCase(TestCase):
         message = newTransformation("next1", "root1", "next2")
         self.assertEqual(message, "New Item: next2 (3)<br>root1 (1) + next1 (2) = next2 (3)<br>root1 (1) + next2 (3) = ???<br>next1 (2) + next2 (3) = ???<br>next2 (3) + next2 (3) = ???<br>")
         gaps = Item.fetch("next1").gaps()
-        self.assertEqual(gaps, "root2 (1) + next1 (2) = ???<br>next1 (2) + next1 (2) = ???<br>next1 (2) + next2 (3) = ???<br>")
+        pair1 = ItemPair.pairFromStrings("root2", "next1")
+        pair2 = ItemPair.pairFromStrings("next1", "next1")
+        pair3 = ItemPair.pairFromStrings("next1", "next2")
+        self.assertEqual(gaps, [pair1, pair2, pair3])
 
     def test_index(self):
         c = Client()
