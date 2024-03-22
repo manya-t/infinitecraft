@@ -8,7 +8,7 @@ from .models import Item, InputDoesNotExist, Transformation, ItemPair
 def index(request):
     message = ""
     if request.method == "POST":
-        isReal = ("isNonsense" not in request.POST) or (request.POST["isNonsense"]==False)
+        isReal = ("isNonsense" not in request.POST)
         message = newTransformation(first_input=request.POST["first_input"], 
                           second_input=request.POST["second_input"], 
                           output=request.POST['output'], 
@@ -35,10 +35,16 @@ def gaps(request):
 
 def item(request, id):
     item = Item.objects.get(id=id)
+    if request.method == 'POST':
+        item.name = request.POST["name"]
+        item.isReal = ("isReal" in request.POST)
+        item.save()   
+    
     as_output = item.as_output.all()
     makes = item.makes()
     gaps = item.gaps()
     related = [tr.export() for tr in as_output | makes]
+    
     return render(request, "item.html", {
         "item": item,
         "as_output": as_output,

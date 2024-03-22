@@ -3,12 +3,26 @@
 {% block body %}
     <h2>{{item.name}}</h2>
 
+    <button class="btn btn-primary" id="editButton" onclick="showEdit()">Edit</button>
+
+    <form action="{% url 'item' item.id %}" method="post" id="editForm" style="display: none;">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input class="form-control" type="text" name="name" value="{{item.name}}">
+        </div>
+        <div class="form-check form-check-inline">
+            <label class="form-check-label mx-sm-3 mb-2" for="isReal">Is real?</label>
+            <input class="form-check-input" type="checkbox" name="isReal" {{item.isReal|yesno:'checked,'}}>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+
     <h4>Real?</h4>
-    {% if item.isReal %}
-        Real!
-    {% else %}
-        Fake!
-    {% endif %}
+    {{item.isReal|yesno:"Real!,Fake!"}}
+    <br>
 
     <h4>Simplest way to make:</h4>
     {{item.simplestWayToMake}}
