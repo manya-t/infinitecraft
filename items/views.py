@@ -1,8 +1,13 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
+from django.db.models import F
+from django.db import IntegrityError
 import random
 from datetime import datetime
 from .models import Item, InputDoesNotExist, Transformation, ItemPair
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+import json
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 def index(request):
@@ -25,8 +30,7 @@ def items(request):
     return render(request, "items.html", {"items" : all_items})
 
 def gaps(request):
-    #last_gap = lastGap()
-    last_gap = []
+    last_gap = lastGap()
     random_gap = randomGap()
     return render(request, "gaps.html", {
         "last_gap": last_gap,
@@ -111,11 +115,11 @@ def newTransformation(first_input, second_input, output, isReal=1):
         
         if not output.isReal:
             for pair in input_pair.first_input.gaps():
-                message += pair
+                message += str(pair)
                 message +="<br>"
             message += "<br>"
             for pair in input_pair.second_input.gaps():
-                message += pair
+                message += str(pair)
                 message +="<br>"
             return message
         else:
@@ -145,19 +149,18 @@ def capitalize(caps_specified):
         return result
 
 def lastGap(tier=None):
-    if tier is None:
-        byTier = Item.objects.filter(isReal=1).order_by("-tier","-timeUpdated")
-    else:
-        byTier = Item.objects.filter(isReal=1, tier=tier).order_by("-tier","-timeUpdated")
-    for i in byTier:
-        gap = i.gaps()
-        if gap != "":
-            return(gap)
+    pairs = (
+        ItemPair.objects.filter(first_input__isReal=1, second_input__isReal=1, as_inputs__isnull=True)
+        .annotate(tier_sum = F("first_input__tier")+F("second_input__tier"))
+        .order_by("-tier_sum", "-from_AB_C__timeCreated")
+    )
+    return pairs[0]
+
             
 def randomGap():
     all = Item.objects.filter(isReal=True)
     result = ''
-    while result == '':
+    while len(result) == 0:
         randNum = random.choice(range(all.count()))
         result = all[randNum].gaps()
     return result
@@ -191,3 +194,26 @@ def populatePairs():
         pair.save()
         tr.input_pair = pair
         tr.save()
+
+@csrf_exempt
+def addEmoji(request):
+    try:
+        data = json.loads(request.body)
+        item = Item.objects.get(name=data.get("name"))
+        item.emoji = data.get("emoji")
+        item.save()
+        return HttpResponse(status=201)
+    except Exception as error:
+        print(error)
+        return HttpResponse(status=500)
+    
+def checkPairsOrder():
+    out_of_order = ItemPair.objects.filter(first_input__tier__gte=F("second_input__tier"))
+    deleted = []
+    for pair in out_of_order:
+        try:
+            pair.checkOrder()
+        except IntegrityError:
+            deleted.append(pair)
+            pair.delete()
+    return deleted

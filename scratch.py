@@ -22,3 +22,10 @@ db_con = sqlite3.connect("db.sqlite3")
     items_with_simplest = items_with_simplest.merge(items_df, how="left", left_on="second_input_id", right_on="id", suffixes=(None, "_second"))
     html_table = items_with_simplest[['name', 'tier', 'isReal', 'name_first', 'name_second']].to_html(classes="table col-sm-10")
     return render(request, "index.html", {"table" : html_table})
+
+
+fetch("https://neal.fun/api/infinite-craft/pair?first=Mountain&second=Earth")
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    });

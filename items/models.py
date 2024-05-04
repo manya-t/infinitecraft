@@ -98,7 +98,7 @@ class Transformation(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"{self.first_input} + {self.second_input} = {self.output}"
+        return f"{self.input_pair.first_input} + {self.input_pair.second_input} = {self.output}"
              
     def updateTier(self):
         message = ""
@@ -116,14 +116,17 @@ class Transformation(models.Model):
 
             message +=f"Now: {self}<br>"
 
-            for t in output.makes():
-                t.input_pair.checkOrder()
-                message += t.updateTier()
+            for pair in output.as_first_in_pair.all() | output.as_second_in_pair.all():
+                pair.checkOrder()
+                tr_set = pair.as_inputs.all()
+                if tr_set:
+                    message += tr_set[0].updateTier()
 
         return message
 
     def export(self):
         return f"{self.second_input}->{self.first_input}->{self.output}"
+
     
 class ItemPair(models.Model):
     first_input = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="as_first_in_pair")
@@ -136,10 +139,17 @@ class ItemPair(models.Model):
         ]
 
     def __str__(self) -> str:
-        if self.as_inputs.count() > 0:
-            return str(self.as_inputs.all()[0])
-        else:
-            return f"{self.first_input} + {self.second_input} = ???"
+        try:
+            output_string = self.as_inputs.get().output
+        except:
+            output_string = "???"
+        return f"{self.first_input} + {self.second_input} = {output_string}"
+    
+    def fetch(str1, str2):
+        try:
+            return ItemPair.objects.get(first_input__name=str1, second_input__name=str2)
+        except:
+            return ItemPair.objects.get(first_input__name=str2, second_input__name=str1)
 
     def pairFromStrings(first_input, second_input):
         item_list = []

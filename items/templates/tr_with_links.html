@@ -1,4 +1,5 @@
 
-<a href="{% url 'item' tr.first_input.id %}">{{tr.first_input}}</a> + <a href="{% url 'item' tr.second_input.id %}">{{tr.second_input}}</a> = 
+<a href="{% url 'item' tr.input_pair.first_input.id %}">{{tr.input_pair.first_input}}</a> + 
+<a href="{% url 'item' tr.input_pair.second_input.id %}">{{tr.input_pair.second_input}}</a> = 
 <a href="{% url 'item' tr.output.id %}">{{tr.output}}</a>
 <br>

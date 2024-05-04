@@ -46,7 +46,9 @@
     <br>
 
     <h4>Gaps:</h4>
-    <br>{{gaps|safe}}
+    {% for pair in gaps %}
+        {{pair}}<br>
+    {% endfor %}
     <br>
 
     <h4>Chain:</h4>

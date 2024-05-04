@@ -1,7 +1,11 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <b>Last Gap:</b><br> {{last_gap|safe}}
-    <br>
-    <b>Random Gap:</b><br> {{random_gap|safe}}
+    <b>Last Gap:</b><br> 
+    {{last_gap}}
+    <br><br>
+    <b>Random Gap:</b><br> 
+    {% for pair in random_gap %}
+        {{pair}}<br>
+    {% endfor %}
 {% endblock %}

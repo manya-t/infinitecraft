@@ -9,5 +9,6 @@ urlpatterns =  [
     path("gaps", views.gaps, name="gaps"),
     path("item/<int:id>", views.item, name="item"),
     path("item/<str:name>", views.itemByName, name="itemByName"),
-    path("exportSet", views.exportSet, name="exportSet")
+    path("exportSet", views.exportSet, name="exportSet"),
+    path("api/addEmoji", views.addEmoji, name="addEmoji")
 ]
