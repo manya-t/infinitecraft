@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Count
 
 # Create your models here.
 class Item(models.Model):
@@ -29,7 +30,15 @@ class Item(models.Model):
     def fetch(name):
         return Item.objects.get(name=name)
     
-    def gaps(self):        
+    def gaps(self):
+        qs = self.as_first_in_pair.all() | self.as_second_in_pair.all()
+        return qs.filter(
+            as_inputs__isnull=True, 
+            first_input__isReal=True, 
+            second_input__isReal=True
+            ).order_by("second_input__tier", "first_input__tier")
+
+    def makeAllGaps(self):        
         to_check = []
 
         for tr in self.makes():
@@ -78,6 +87,11 @@ class Item(models.Model):
             currentResult = list(set(currentResult))
             return currentResult
 
+    def mostCommonOutput(self):
+        outputs_by_freq = self.makes().values("output").annotate(freq=Count("output")).order_by("-freq")
+        most_common = outputs_by_freq[0]
+        most_common['item'] = Item.objects.get(id=most_common['output'])
+        return most_common
     
 class InputDoesNotExist(Item.DoesNotExist):
     def __init__(self, name, *args: object) -> None:
@@ -126,6 +140,17 @@ class Transformation(models.Model):
 
     def export(self):
         return f"{self.second_input}->{self.first_input}->{self.output}"
+    
+    def makeGapPairs(self):
+        pairsToCheck = [[self.input_pair.first_input, self.output], 
+                         [self.input_pair.second_input, self.output],
+                         [self.output, self.output]]
+        for pair_list in pairsToCheck:
+            pair = ItemPair.getOrMakePairFromList(pair_list)
+            if pair.from_AB_C is None:
+                    pair.from_AB_C = self
+                    pair.save()
+        return self
 
     
 class ItemPair(models.Model):

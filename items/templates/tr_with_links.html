@@ -2,4 +2,5 @@
 <a href="{% url 'item' tr.input_pair.first_input.id %}">{{tr.input_pair.first_input}}</a> + 
 <a href="{% url 'item' tr.input_pair.second_input.id %}">{{tr.input_pair.second_input}}</a> = 
 <a href="{% url 'item' tr.output.id %}">{{tr.output}}</a>
+<small>{{tr.timeCreated|date:"M j, g:i a"}}</small>
 <br>

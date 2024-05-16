@@ -113,6 +113,8 @@ def newTransformation(first_input, second_input, output, isReal=1):
         
         message += transformation.updateTier()
         
+        transformation.makeGapPairs()
+
         if not output.isReal:
             for pair in input_pair.first_input.gaps():
                 message += str(pair)
@@ -121,12 +123,20 @@ def newTransformation(first_input, second_input, output, isReal=1):
             for pair in input_pair.second_input.gaps():
                 message += str(pair)
                 message +="<br>"
-            return message
         else:
             for pair in output.gaps():
                 message += str(pair)
                 message +="<br>"
-            return message
+        
+        first_most_common = input_pair.first_input.mostCommonOutput()
+        second_most_common = input_pair.second_input.mostCommonOutput()
+        message +="<br>"
+        message += f"{input_pair.first_input} makes {first_most_common['item']} {first_most_common['freq']} times"
+        message +="<br>"
+        message += f"{input_pair.second_input} makes {second_most_common['item']} {second_most_common['freq']} times"
+        message +="<br>"
+
+        return message
 
 
 def checkForTransformation(first_input, second_input):
