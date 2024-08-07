@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 4, "label": "Earth (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 80, "label": "Troll (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2, "label": "Fire (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 43, "label": "Dragon (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1, "label": "Water (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 491, "label": "Sea Monster (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3, "label": "Wind (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5, "label": "Tornado (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8, "label": "Dust (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 490, "label": "Dust Bunny (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7, "label": "Lake (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 510, "label": "Loch Ness (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 10, "label": "Mountain (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 276, "label": "Yeti (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6, "label": "Volcano (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 35, "label": "Fjord (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 270, "label": "Kraken (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 29, "label": "Island (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 17, "label": "Swamp (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 320, "label": "Loch Ness Monster (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 514, "label": "Chai (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 496, "label": "Hydra (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 731, "label": "Dust Monster (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 632, "label": "Ghost (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 263, "label": "Vampire (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 74, "label": "Lightning (4)", "shape": "ellipse"}, {"color": "goldenrod", "id": 286, "label": "Frankenstein (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 170, "label": "Nessie (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 497, "label": "Steamboat (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 560, "label": "Captain Nemo (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 99, "label": "Train (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2794, "label": "Godzilla (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4614, "label": "Ogre (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 293, "label": "Abominable Snowman (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1059, "label": "Chimera (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 173, "label": "Golem (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4984, "label": "Cyclops (6)", "shape": "ellipse"}, {"color": "goldenrod", "id": 267, "label": "Monster (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 180, "label": "Narwhal (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 266, "label": "Unicorn (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 642, "label": "Pollution (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 870, "label": "Mutant (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 269, "label": "Zeus (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 799, "label": "Zombie (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 438, "label": "Adam (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 430, "label": "Baby (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 441, "label": "Cthulhu (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 848, "label": "Demon (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1373, "label": "Evil (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 444, "label": "Bride (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 837, "label": "King Kong (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 482, "label": "Haunted House (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1430, "label": "Holy Lake (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 424, "label": "Human (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 640, "label": "Minotaur (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 885, "label": "Toxic Waste (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 426, "label": "Dracula (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 508, "label": "Bridezilla (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 626, "label": "Divorce (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 628, "label": "Doctor (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3228, "label": "Higgs Boson (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1469, "label": "Hulk (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 464, "label": "Michael Jackson (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 713, "label": "Thriller (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1654, "label": "Nightmare (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2073, "label": "Science (7)", "shape": "ellipse"}, {"color": "goldenrod", "id": 2145, "label": "Student (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 555, "label": "Swamping (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6068, "label": "Ugly (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1004, "label": "Beast (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1328, "label": "Colony (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2138, "label": "Experiment (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3158, "label": "Lab Rat (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3498, "label": "Loneliness (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2320, "label": "Mad Scientist (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 934, "label": "Obsession (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1156, "label": "Animal (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1675, "label": "Bedroom (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1598, "label": "Blob (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1667, "label": "Slime (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1549, "label": "Mother-in-law (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2290, "label": "Ooze (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1619, "label": "Monster-in-law (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3628, "label": "Electric Chair (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3245, "label": "Radiation (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7547, "label": "Lady Gaga (19)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2231, "label": "Fame (9)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 4, "to": 80}, {"arrows": "to", "from": 2, "to": 43}, {"arrows": "to", "from": 1, "to": 491}, {"arrows": "to", "from": 3, "to": 5}, {"arrows": "to", "from": 8, "to": 490}, {"arrows": "to", "from": 7, "to": 510}, {"arrows": "to", "from": 10, "to": 276}, {"arrows": "to", "from": 5, "to": 5}, {"arrows": "to", "from": 6, "to": 43}, {"arrows": "to", "from": 35, "to": 270}, {"arrows": "to", "from": 29, "to": 270}, {"arrows": "to", "from": 17, "to": 320}, {"arrows": "to", "from": 514, "to": 276}, {"arrows": "to", "from": 43, "to": 496}, {"arrows": "to", "from": 490, "to": 731}, {"arrows": "to", "from": 632, "to": 263}, {"arrows": "to", "from": 74, "to": 286}, {"arrows": "to", "from": 510, "to": 170}, {"arrows": "to", "from": 497, "to": 560}, {"arrows": "to", "from": 99, "to": 2794}, {"arrows": "to", "from": 80, "to": 4614}, {"arrows": "to", "from": 293, "to": 276}, {"arrows": "to", "from": 1059, "to": 43}, {"arrows": "to", "from": 173, "to": 4984}, {"arrows": "to", "from": 496, "to": 43}, {"arrows": "to", "from": 320, "to": 320}, {"arrows": "to", "from": 267, "to": 267}, {"arrows": "to", "from": 180, "to": 266}, {"arrows": "to", "from": 170, "to": 320}, {"arrows": "to", "from": 642, "to": 870}, {"arrows": "to", "from": 491, "to": 270}, {"arrows": "to", "from": 266, "to": 180}, {"arrows": "to", "from": 276, "to": 293}, {"arrows": "to", "from": 269, "to": 4984}, {"arrows": "to", "from": 799, "to": 286}, {"arrows": "to", "from": 438, "to": 286}, {"arrows": "to", "from": 430, "to": 1059}, {"arrows": "to", "from": 441, "to": 441}, {"arrows": "to", "from": 4984, "to": 496}, {"arrows": "to", "from": 848, "to": 43}, {"arrows": "to", "from": 731, "to": 731}, {"arrows": "to", "from": 1373, "to": 848}, {"arrows": "to", "from": 286, "to": 444}, {"arrows": "to", "from": 2794, "to": 837}, {"arrows": "to", "from": 482, "to": 632}, {"arrows": "to", "from": 1430, "to": 320}, {"arrows": "to", "from": 424, "to": 263}, {"arrows": "to", "from": 270, "to": 441}, {"arrows": "to", "from": 640, "to": 640}, {"arrows": "to", "from": 870, "to": 286}, {"arrows": "to", "from": 4614, "to": 80}, {"arrows": "to", "from": 885, "to": 870}, {"arrows": "to", "from": 263, "to": 426}, {"arrows": "to", "from": 444, "to": 508}, {"arrows": "to", "from": 508, "to": 444}, {"arrows": "to", "from": 626, "to": 2794}, {"arrows": "to", "from": 628, "to": 286}, {"arrows": "to", "from": 426, "to": 263}, {"arrows": "to", "from": 3228, "to": 2794}, {"arrows": "to", "from": 1469, "to": 2794}, {"arrows": "to", "from": 837, "to": 2794}, {"arrows": "to", "from": 464, "to": 713}, {"arrows": "to", "from": 1654, "to": 1654}, {"arrows": "to", "from": 2073, "to": 286}, {"arrows": "to", "from": 2145, "to": 286}, {"arrows": "to", "from": 555, "to": 510}, {"arrows": "to", "from": 6068, "to": 80}, {"arrows": "to", "from": 1004, "to": 43}, {"arrows": "to", "from": 1328, "to": 799}, {"arrows": "to", "from": 2138, "to": 286}, {"arrows": "to", "from": 3158, "to": 286}, {"arrows": "to", "from": 3498, "to": 286}, {"arrows": "to", "from": 2320, "to": 286}, {"arrows": "to", "from": 934, "to": 263}, {"arrows": "to", "from": 713, "to": 464}, {"arrows": "to", "from": 1156, "to": 43}, {"arrows": "to", "from": 1675, "to": 1654}, {"arrows": "to", "from": 1598, "to": 1667}, {"arrows": "to", "from": 1549, "to": 1549}, {"arrows": "to", "from": 1667, "to": 2290}, {"arrows": "to", "from": 1619, "to": 1619}, {"arrows": "to", "from": 2290, "to": 1667}, {"arrows": "to", "from": 3628, "to": 286}, {"arrows": "to", "from": 3245, "to": 2794}, {"arrows": "to", "from": 7547, "to": 2231}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

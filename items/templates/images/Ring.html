@@ -1,0 +1,250 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 600px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 4, "label": "Earth (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 445, "label": "Dirt (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2, "label": "Fire (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 43, "label": "Dragon (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1, "label": "Water (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 681, "label": "Fountain (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3, "label": "Wind (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 723, "label": "Windmill (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8, "label": "Dust (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 624, "label": "Hobbit (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7, "label": "Lake (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 622, "label": "Lord of the Rings (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 14, "label": "Lava (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6, "label": "Volcano (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 11, "label": "Smoke (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 38, "label": "Incense (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5, "label": "Tornado (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 32, "label": "Hurricane (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 20, "label": "Storm (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 275, "label": "Wedding (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 15, "label": "Planet (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 274, "label": "Saturn (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 86, "label": "Cyclone (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 59, "label": "Desert (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 129, "label": "Genie (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 46, "label": "Fish (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 47, "label": "Mermaid (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 69, "label": "Wish (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 145, "label": "Ariel (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 45, "label": "Moon (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 127, "label": "Werewolf (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 434, "label": "River (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1308, "label": "Snake (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5381, "label": "Ouroboros (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 442, "label": "Bird (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1388, "label": "Owl (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1356, "label": "Diamond (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2470, "label": "Engagement (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 412, "label": "Goldfish (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 122, "label": "House (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 133, "label": "Jupiter (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 262, "label": "Love (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 436, "label": "Marriage (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 203, "label": "Onyx (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 265, "label": "Prince (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 425, "label": "King (6)", "shape": "ellipse"}, {"color": "goldenrod", "id": 428, "label": "Ring (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 635, "label": "Crown (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 119, "label": "Wizard (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4935, "label": "Bling (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 825, "label": "Curse (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 282, "label": "Dwarf (6)", "shape": "ellipse"}, {"color": "goldenrod", "id": 1155, "label": "Elf (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 427, "label": "God (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 271, "label": "Gold (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 800, "label": "Gollum (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 796, "label": "Home (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2507, "label": "Jewel (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5702, "label": "Jeweler (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 519, "label": "Kiss (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 322, "label": "Magic (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3064, "label": "Infinity (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1912, "label": "Harry Potter (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 390, "label": "Red Spot (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 263, "label": "Vampire (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 426, "label": "Dracula (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 804, "label": "Aragorn (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 818, "label": "Frodo (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5124, "label": "Lord (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5260, "label": "Iron (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 802, "label": "Sauron (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 797, "label": "Middle Earth (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 980, "label": "Mordor (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 863, "label": "Shadow (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 477, "label": "Spell (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1055, "label": "Arda (8)", "shape": "ellipse"}, {"color": "goldenrod", "id": 1000, "label": "Arwen (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 996, "label": "Fellowship (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 986, "label": "One Ring (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1050, "label": "Harley Quinn (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1153, "label": "The Silmarillion (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3602, "label": "Circle (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3866, "label": "O (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1394, "label": "Council (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1464, "label": "Arkenstone (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1420, "label": "Nenya (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3977, "label": "O-Ring (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1404, "label": "Turgon (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2046, "label": "Isildur (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1510, "label": "Silmaril (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2959, "label": "Moonstone (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2960, "label": "Moon Ring (14)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2204, "label": "Palantir (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1685, "label": "Palant\u00edr (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2050, "label": "Eye of Sauron (14)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6827, "label": "Named Desire (15)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1797, "label": "Celebrimbor (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1805, "label": "Elvish (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1784, "label": "Maedhros (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1832, "label": "Nauglamir (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3123, "label": "Diamond Card (18)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7336, "label": "Diamonds (22)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3864, "label": "Sapphire (27)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 4, "to": 445}, {"arrows": "to", "from": 2, "to": 43}, {"arrows": "to", "from": 1, "to": 681}, {"arrows": "to", "from": 3, "to": 723}, {"arrows": "to", "from": 8, "to": 624}, {"arrows": "to", "from": 7, "to": 622}, {"arrows": "to", "from": 14, "to": 6}, {"arrows": "to", "from": 11, "to": 38}, {"arrows": "to", "from": 5, "to": 5}, {"arrows": "to", "from": 6, "to": 14}, {"arrows": "to", "from": 32, "to": 20}, {"arrows": "to", "from": 38, "to": 275}, {"arrows": "to", "from": 15, "to": 274}, {"arrows": "to", "from": 20, "to": 5}, {"arrows": "to", "from": 86, "to": 5}, {"arrows": "to", "from": 59, "to": 129}, {"arrows": "to", "from": 43, "to": 624}, {"arrows": "to", "from": 46, "to": 47}, {"arrows": "to", "from": 129, "to": 69}, {"arrows": "to", "from": 47, "to": 145}, {"arrows": "to", "from": 45, "to": 127}, {"arrows": "to", "from": 434, "to": 275}, {"arrows": "to", "from": 274, "to": 622}, {"arrows": "to", "from": 1308, "to": 5381}, {"arrows": "to", "from": 723, "to": 3}, {"arrows": "to", "from": 69, "to": 129}, {"arrows": "to", "from": 145, "to": 47}, {"arrows": "to", "from": 442, "to": 1388}, {"arrows": "to", "from": 1356, "to": 2470}, {"arrows": "to", "from": 445, "to": 445}, {"arrows": "to", "from": 681, "to": 69}, {"arrows": "to", "from": 412, "to": 47}, {"arrows": "to", "from": 122, "to": 624}, {"arrows": "to", "from": 133, "to": 274}, {"arrows": "to", "from": 262, "to": 436}, {"arrows": "to", "from": 203, "to": 275}, {"arrows": "to", "from": 265, "to": 425}, {"arrows": "to", "from": 428, "to": 635}, {"arrows": "to", "from": 127, "to": 127}, {"arrows": "to", "from": 119, "to": 624}, {"arrows": "to", "from": 4935, "to": 275}, {"arrows": "to", "from": 635, "to": 425}, {"arrows": "to", "from": 825, "to": 622}, {"arrows": "to", "from": 282, "to": 624}, {"arrows": "to", "from": 1155, "to": 624}, {"arrows": "to", "from": 2470, "to": 436}, {"arrows": "to", "from": 427, "to": 622}, {"arrows": "to", "from": 271, "to": 622}, {"arrows": "to", "from": 624, "to": 800}, {"arrows": "to", "from": 796, "to": 122}, {"arrows": "to", "from": 2507, "to": 275}, {"arrows": "to", "from": 5702, "to": 275}, {"arrows": "to", "from": 425, "to": 622}, {"arrows": "to", "from": 519, "to": 265}, {"arrows": "to", "from": 622, "to": 800}, {"arrows": "to", "from": 322, "to": 119}, {"arrows": "to", "from": 436, "to": 275}, {"arrows": "to", "from": 5381, "to": 3064}, {"arrows": "to", "from": 1388, "to": 1912}, {"arrows": "to", "from": 390, "to": 133}, {"arrows": "to", "from": 263, "to": 426}, {"arrows": "to", "from": 275, "to": 436}, {"arrows": "to", "from": 804, "to": 425}, {"arrows": "to", "from": 426, "to": 263}, {"arrows": "to", "from": 818, "to": 624}, {"arrows": "to", "from": 800, "to": 624}, {"arrows": "to", "from": 1912, "to": 622}, {"arrows": "to", "from": 3064, "to": 5124}, {"arrows": "to", "from": 5260, "to": 802}, {"arrows": "to", "from": 797, "to": 622}, {"arrows": "to", "from": 980, "to": 802}, {"arrows": "to", "from": 802, "to": 622}, {"arrows": "to", "from": 863, "to": 263}, {"arrows": "to", "from": 477, "to": 322}, {"arrows": "to", "from": 1055, "to": 5124}, {"arrows": "to", "from": 1000, "to": 1155}, {"arrows": "to", "from": 996, "to": 622}, {"arrows": "to", "from": 5124, "to": 802}, {"arrows": "to", "from": 986, "to": 622}, {"arrows": "to", "from": 1050, "to": 1050}, {"arrows": "to", "from": 1153, "to": 802}, {"arrows": "to", "from": 3602, "to": 3866}, {"arrows": "to", "from": 1394, "to": 624}, {"arrows": "to", "from": 1464, "to": 986}, {"arrows": "to", "from": 1420, "to": 1155}, {"arrows": "to", "from": 3866, "to": 3977}, {"arrows": "to", "from": 1404, "to": 1420}, {"arrows": "to", "from": 2046, "to": 800}, {"arrows": "to", "from": 3977, "to": 275}, {"arrows": "to", "from": 1510, "to": 986}, {"arrows": "to", "from": 2959, "to": 2960}, {"arrows": "to", "from": 2204, "to": 802}, {"arrows": "to", "from": 1685, "to": 802}, {"arrows": "to", "from": 2050, "to": 622}, {"arrows": "to", "from": 2960, "to": 45}, {"arrows": "to", "from": 6827, "to": 800}, {"arrows": "to", "from": 1797, "to": 802}, {"arrows": "to", "from": 1805, "to": 5124}, {"arrows": "to", "from": 1784, "to": 1784}, {"arrows": "to", "from": 1832, "to": 986}, {"arrows": "to", "from": 3123, "to": 2470}, {"arrows": "to", "from": 7336, "to": 2470}, {"arrows": "to", "from": 3864, "to": 2470}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

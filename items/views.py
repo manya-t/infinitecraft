@@ -4,37 +4,122 @@ from django.db.models import F
 from django.db import IntegrityError
 import random
 from datetime import datetime
-from .models import Item, InputDoesNotExist, Transformation, ItemPair
+from .models import Item, InputDoesNotExist, Transformation, ItemPair, PyvisConstants
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
+from pyvis.network import Network
+import pytz
 
 # Create your views here.
 def index(request):
+    all_tr = Transformation.objects.all().order_by("-timeCreated")
+    page_number = request.GET.get("page")
+    page = Paginator(all_tr, 50).get_page(page_number)
     message = ""
     if request.method == "POST":
         isReal = ("isNonsense" not in request.POST)
-        message = newTransformation(first_input=request.POST["first_input"], 
+        result = newTransformation(first_input=request.POST["first_input"], 
                           second_input=request.POST["second_input"], 
                           output=request.POST['output'], 
                           isReal=isReal)
-    all_tr = Transformation.objects.all().order_by("-timeCreated")
-    page = Paginator(all_tr, 50).get_page(1)
-    return render(request, "index.html", {
-        "page" : page,
-        "message" : message})
+        message = result["message"]
+        tr = result["tr"]
+        returned_message = result["message"]        
+
+        """ if tr.output.isReal:
+            gaps = tr.output.gaps()
+        else:
+            gaps = tr.input_pair.first_input.gaps() | tr.input_pair.second_input.gaps() """
+        
+        first_most_common = tr.input_pair.first_input.mostCommonOutput()
+        second_most_common = tr.input_pair.second_input.mostCommonOutput()
+
+        following = tr.input_pair.following()
+        if following is None:
+            following = tr.input_pair.second_input
+            
+        following.chainGraph(highlight=True)
+        gaps = following.gaps()
+        url_path_name = following.name_wo_special_char()
+    
+        return render(request, "index.html", {
+            "page" : page,
+            "message" : message,
+            "tr": tr,
+            "success": result["success"],
+            "gaps": gaps,
+            "first_most_common": first_most_common,
+            "second_most_common": second_most_common,
+            "following": following,
+            "url_path_name": url_path_name})
+    else:
+        return render(request, "index.html", {
+            "page" : page})
 
 def items(request):
-    all_items = Item.objects.all().order_by("tier")
-    all_items.select_related()
-    return render(request, "items.html", {"items" : all_items})
+    page_number = request.GET.get("page")
+    filter_name = request.GET.get("name")
+    filter_exact = ("exact" in request.GET)
+    filter_tier = request.GET.get("tier")
+    filter_showNonsense = ("showNonsense" in request.GET)
+    order = request.GET.get("order")
+    if order is None:
+        order = "tier"
+    order2 = request.GET.get("order2")
+    if order2 is None:
+        order2 = "timeCreated"
+    
+    items = Item.objects.all().order_by(order, order2)
+    if filter_name is not None and filter_name != "":
+        if filter_exact:
+            items = items.filter(name=filter_name)
+        else:
+            items = items.filter(name__contains=filter_name)
+    if filter_tier is not None and filter_tier != "":
+        items = items.filter(tier = filter_tier)
+    if not filter_showNonsense:
+        items = items.filter(isReal=True)
+    page = Paginator(items, 50).get_page(page_number)
+    return render(request, "items.html", {"page" : page})
 
 def gaps(request):
-    last_gap = lastGap()
-    random_gap = randomGap()
+    pairs = (
+        ItemPair.objects.filter(first_input__isReal=1, second_input__isReal=1, as_inputs__isnull=True)
+        .annotate(tier_sum = F("first_input__tier")+F("second_input__tier"))
+        .order_by("tier_sum", "from_AB_C__timeCreated")
+    )
+    length = pairs.count()
+    last_gap = pairs[length-1]
+    gap_with_biggest_tier = pairs.order_by("second_input__tier", "from_AB_C__timeCreated")[length-1]
+    first_gap = pairs[0]
+    median_gap = pairs[int(length/2)]
+    random_gap = pairs[random.choice(range(length))]
+    gaps = [
+        {"pair": first_gap, "name": "First Gap"},
+        {"pair": last_gap, "name": "Last Gap"},
+        {"pair": gap_with_biggest_tier, "name": "Gap with biggest tier"},
+        {"pair": median_gap, "name": "Median Gap"},
+        {"pair": random_gap, "name": "Random Gap"}
+    ]
+    times = []
+    for gap in gaps:
+        try:
+            times.append(gap["pair"].from_AB_C.timeCreated)
+        except:
+            times.append(datetime(1,1,1,tzinfo=pytz.UTC))
+
+    for i in range(len(times)):
+        gap = gaps[i]
+        if times[i] == min(times):
+            gap['flag'] = 'earliest'
+        if times[i] == max(times):
+            gap['flag'] = 'latest'
+        gap['following'] = gap['pair'].following()
+
     return render(request, "gaps.html", {
-        "last_gap": last_gap,
-        "random_gap": random_gap
+        "gaps": gaps,
+        "num_gaps": length
     })
 
 def item(request, id):
@@ -47,14 +132,17 @@ def item(request, id):
     as_output = item.as_output.all()
     makes = item.makes()
     gaps = item.gaps()
-    related = [tr.export() for tr in as_output | makes]
+    #related = [tr.export() for tr in as_output | makes]
     
+    item.chainGraph(highlight=True)
+    name_wo_special_char = item.name_wo_special_char()
+
     return render(request, "item.html", {
         "item": item,
         "as_output": as_output,
         "makes": makes,
         "gaps": gaps,
-        "related": related
+        "name_wo_special_char": name_wo_special_char
         })
 
 def itemByName(request, name):
@@ -78,34 +166,32 @@ def exportSet(request):
     return render(request, "exportSet.html", {"export": export})
 
 def newTransformation(first_input, second_input, output, isReal=1):
-    message = ''
     try:   
         input_pair = ItemPair.pairFromStrings(first_input, second_input)
     except InputDoesNotExist as error:
-        return error
+        return {"success": False, "message": error}
 
     try:
         existing_tr = Transformation.objects.get(input_pair=input_pair)
         if existing_tr.output.name == output:
-            message += f"This transformation already exists! {existing_tr}<br>"
             existing_tr.updateTier()
-            return message
+            return {"success": False, "message": f"This transformation already exists! {existing_tr}", "tr": existing_tr}
         else:
-            message += f"The database says this transformation has a result of {existing_tr.output.name} and not {output}, please check again.<br>"
-            return message
+            return {"success": False, 
+                    "message": f"The database says this transformation has a result of {existing_tr.output.name} and not {output}, please check again.", 
+                    "tr": existing_tr}
     except Transformation.DoesNotExist:
-
+        message = ''
         try:
             output = Item.objects.get(name=output)
         except Item.DoesNotExist:
             tier = max(input_pair.first_input.tier, input_pair.second_input.tier) + 1
             output = Item(name=output, tier=tier, isReal=isReal)
             output.save()
-            message += f"New Item: {output}<br>"
+            message = f"New Item: {output}"
                     
-        transformation = Transformation(input_pair=input_pair, first_input=input_pair.first_input, second_input=input_pair.second_input, output=output)
+        transformation = Transformation(input_pair=input_pair, output=output)
         transformation.save()
-        message += f"{transformation}<br>"
 
         if output.simplestWayToMake is None:
             output.simplestWayToMake = transformation
@@ -115,28 +201,9 @@ def newTransformation(first_input, second_input, output, isReal=1):
         
         transformation.makeGapPairs()
 
-        if not output.isReal:
-            for pair in input_pair.first_input.gaps():
-                message += str(pair)
-                message +="<br>"
-            message += "<br>"
-            for pair in input_pair.second_input.gaps():
-                message += str(pair)
-                message +="<br>"
-        else:
-            for pair in output.gaps():
-                message += str(pair)
-                message +="<br>"
-        
-        first_most_common = input_pair.first_input.mostCommonOutput()
-        second_most_common = input_pair.second_input.mostCommonOutput()
-        message +="<br>"
-        message += f"{input_pair.first_input} makes {first_most_common['item']} {first_most_common['freq']} times"
-        message +="<br>"
-        message += f"{input_pair.second_input} makes {second_most_common['item']} {second_most_common['freq']} times"
-        message +="<br>"
-
-        return message
+        return {"success": True, 
+                "message": message,
+                "tr": transformation}
 
 
 def checkForTransformation(first_input, second_input):
@@ -227,3 +294,17 @@ def checkPairsOrder():
             deleted.append(pair)
             pair.delete()
     return deleted
+
+def mostCommonGraph():
+    nt = Network(directed=True)
+    items = Item.objects.all()
+    edges = []
+    for item in items:
+        color = PyvisConstants.COLOR_DEFAULT if item.isReal else PyvisConstants.COLOR_NOT_REAL
+        nt.add_node(item.id, label=item.name, color=color, shape="ellipse")
+        mostCommonOutputId = item.mostCommonOutput()["output"]
+        if mostCommonOutputId is not None:
+            edges.append((item.id, item.mostCommonOutput()["output"]))
+    nt.add_edges(edges)
+    nt.save_graph('items/templates/images/mostCommonOutputs.html')
+    return

@@ -1,7 +1,12 @@
 from django.db import models
 from django.db.models import Count
+from pyvis.network import Network
 
-# Create your models here.
+class PyvisConstants:
+    COLOR_DEFAULT = "#B2C9AB"
+    COLOR_NOT_REAL = "#6c757d"
+    COLOR_HIGHLIGHT = "goldenrod"
+
 class Item(models.Model):
     name = models.TextField(unique=True)
     emoji = models.TextField(null=True)
@@ -32,11 +37,7 @@ class Item(models.Model):
     
     def gaps(self):
         qs = self.as_first_in_pair.all() | self.as_second_in_pair.all()
-        return qs.filter(
-            as_inputs__isnull=True, 
-            first_input__isReal=True, 
-            second_input__isReal=True
-            ).order_by("second_input__tier", "first_input__tier")
+        return qs.filter(as_inputs__isnull=True).order_by("second_input__tier", "first_input__tier")
 
     def makeAllGaps(self):        
         to_check = []
@@ -89,10 +90,49 @@ class Item(models.Model):
 
     def mostCommonOutput(self):
         outputs_by_freq = self.makes().values("output").annotate(freq=Count("output")).order_by("-freq")
-        most_common = outputs_by_freq[0]
-        most_common['item'] = Item.objects.get(id=most_common['output'])
-        return most_common
+        if outputs_by_freq.count() == 0:
+            return {"output":None, "freq":0, "item":None}
+        else:
+            most_common = outputs_by_freq[0]
+            most_common['item'] = Item.objects.get(id=most_common['output'])
+            return most_common
     
+    def chainGraph(self, highlight=False):
+        net = Network(directed=True)
+
+        if highlight:
+            most_recent = Transformation.objects.all().order_by("-timeCreated")[0]
+            to_highlight = [most_recent.input_pair.first_input, most_recent.input_pair.second_input, most_recent.output]
+        else:
+            to_highlight = []
+
+        for tr in self.makes():
+            if tr.input_pair.first_input == self:
+                other_input = tr.input_pair.second_input
+            else:
+                other_input = tr.input_pair.first_input
+            
+            color_input = PyvisConstants.COLOR_DEFAULT
+            color_output = PyvisConstants.COLOR_DEFAULT
+            if other_input in to_highlight:
+                color_input = PyvisConstants.COLOR_HIGHLIGHT
+            if tr.output in to_highlight:
+                color_output = PyvisConstants.COLOR_HIGHLIGHT
+            if not other_input.isReal:
+                color_input = PyvisConstants.COLOR_NOT_REAL
+            if not tr.output.isReal:
+                color_output = PyvisConstants.COLOR_NOT_REAL
+
+            net.add_node(other_input.id, label=str(other_input), shape="ellipse", color=color_input)
+            net.add_node(tr.output.id, label=str(tr.output), shape="ellipse", color=color_output)
+            net.add_edge(other_input.id, tr.output.id)
+        
+        
+        net.save_graph('items/templates/images/' + self.name_wo_special_char() + '.html')
+
+    def name_wo_special_char(self):
+        return self.name.replace("?","%3F").replace("/", "%2F")
+
 class InputDoesNotExist(Item.DoesNotExist):
     def __init__(self, name, *args: object) -> None:
         msg = f"Input ({name}) does not exist. Enter a transformation that fixes that and then try again."
@@ -220,3 +260,14 @@ class ItemPair(models.Model):
             self.first_input = ordered[0]
             self.second_input = ordered[1]
             self.save()
+
+    def following(self):
+        if self.from_AB_C is None:
+            return None
+        prev_input_pair = self.from_AB_C.input_pair
+        if self.first_input in [prev_input_pair.first_input, prev_input_pair.second_input]:
+            return self.first_input
+        elif self.second_input in [prev_input_pair.first_input, prev_input_pair.second_input]:
+            return self.second_input
+        else:
+            return None

@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 1, "label": "Water (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 16, "label": "Ocean (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 27, "label": "Fog (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 880, "label": "Smog (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 9786, "label": "Rising Sea Levels (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 44, "label": "Atlantis (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 79, "label": "Disaster (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7351, "label": "Climate Change (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 54, "label": "Rain (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 149, "label": "Flood (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 293, "label": "Abominable Snowman (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1907, "label": "Apocalypse (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 948, "label": "Hot (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 689, "label": "Noah (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 642, "label": "Pollution (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 280, "label": "Cow (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2873, "label": "Methane (7)", "shape": "ellipse"}, {"color": "goldenrod", "id": 2924, "label": "Global Warming (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 492, "label": "Ark (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2946, "label": "Bible (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5486, "label": "Hot Air (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 747, "label": "Heat (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2922, "label": "Labyrinth (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2923, "label": "Maze (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1285, "label": "Warmth (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 807, "label": "Politician (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4204, "label": "Cold War (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3694, "label": "Ice Age (11)", "shape": "ellipse"}, {"color": "goldenrod", "id": 9612, "label": "Hot Ice (12)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 1, "to": 16}, {"arrows": "to", "from": 27, "to": 880}, {"arrows": "to", "from": 16, "to": 9786}, {"arrows": "to", "from": 44, "to": 44}, {"arrows": "to", "from": 79, "to": 7351}, {"arrows": "to", "from": 54, "to": 149}, {"arrows": "to", "from": 880, "to": 27}, {"arrows": "to", "from": 293, "to": 1}, {"arrows": "to", "from": 1907, "to": 948}, {"arrows": "to", "from": 149, "to": 689}, {"arrows": "to", "from": 642, "to": 1907}, {"arrows": "to", "from": 280, "to": 2873}, {"arrows": "to", "from": 2924, "to": 2924}, {"arrows": "to", "from": 492, "to": 689}, {"arrows": "to", "from": 2946, "to": 689}, {"arrows": "to", "from": 7351, "to": 5486}, {"arrows": "to", "from": 747, "to": 948}, {"arrows": "to", "from": 948, "to": 747}, {"arrows": "to", "from": 2922, "to": 2923}, {"arrows": "to", "from": 2873, "to": 280}, {"arrows": "to", "from": 689, "to": 492}, {"arrows": "to", "from": 9786, "to": 44}, {"arrows": "to", "from": 1285, "to": 948}, {"arrows": "to", "from": 5486, "to": 807}, {"arrows": "to", "from": 2923, "to": 2922}, {"arrows": "to", "from": 807, "to": 5486}, {"arrows": "to", "from": 4204, "to": 3694}, {"arrows": "to", "from": 3694, "to": 9612}, {"arrows": "to", "from": 9612, "to": 9612}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

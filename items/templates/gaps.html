@@ -1,11 +1,23 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <b>Last Gap:</b><br> 
-    {{last_gap}}
-    <br><br>
-    <b>Random Gap:</b><br> 
-    {% for pair in random_gap %}
-        {{pair}}<br>
+    <p>{{num_gaps}} gaps total</p>
+
+    {% for gap in gaps %}
+    <div {% if gap.flag == 'earliest' %}
+        style="background-color: Moccasin"
+    {% elif gap.flag == 'latest'%}
+        style="background-color: LightSkyBlue"
+    {%endif%}>
+        <b>{{gap.name}}:</b><br> 
+        {{gap.pair}}
+        <br><small>From: {{gap.pair.from_AB_C}}
+            <br>Total tier: {{gap.pair.first_input.tier|add:gap.pair.second_input.tier}}
+            <br>Following: {{gap.following}}
+            <br>Time Created: {{gap.pair.from_AB_C.timeCreated}}
+        </small>
+    </div>
+        <br><br>
     {% endfor %}
+    
 {% endblock %}

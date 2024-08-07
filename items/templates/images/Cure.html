@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 2, "label": "Fire (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2644, "label": "Firefighter (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1, "label": "Water (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 634, "label": "Medicine (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 26, "label": "Tea (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1943, "label": "Cough (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 65, "label": "Wine (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 288, "label": "Hangover (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 144, "label": "Alcohol (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 159, "label": "Fruit (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 127, "label": "Werewolf (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 263, "label": "Vampire (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2083, "label": "Disease (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 872, "label": "Health (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1586, "label": "Dream (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1497, "label": "Sleep (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 995, "label": "Fear (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1272, "label": "Courage (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 424, "label": "Human (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 628, "label": "Doctor (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 374, "label": "Liberty (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 433, "label": "Freedom (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3192, "label": "Pi\u00f1a Colada (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1016, "label": "Poison (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5404, "label": "Shot (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2086, "label": "Vaccine (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 804, "label": "Aragorn (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 993, "label": "Legolas (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1029, "label": "Asylum (7)", "shape": "ellipse"}, {"color": "goldenrod", "id": 805, "label": "Patient (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 452, "label": "Cancer (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3185, "label": "Remission (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 892, "label": "Cocaine (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 435, "label": "Cure (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 676, "label": "Potion (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 660, "label": "Faith (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 439, "label": "Religion (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 568, "label": "Headache (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1114, "label": "Aspirin (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 845, "label": "Hospital (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1496, "label": "Plague (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3087, "label": "Sick (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2880, "label": "Soap (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2882, "label": "Detergent (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 826, "label": "Terror (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4038, "label": "Antidote (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2464, "label": "Diabetes (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3487, "label": "Insulin (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8275, "label": "Drugs (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2175, "label": "Happiness (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 858, "label": "Pain (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2114, "label": "Pill (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 875, "label": "Poison Ivy (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1038, "label": "Rash (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1627, "label": "Quarantine (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 637, "label": "Terrorist (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 758, "label": "Tumor (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2087, "label": "Immunity (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2080, "label": "Virus (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1143, "label": "Chemotherapy (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3094, "label": "Chicken Noodle Soup (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 9461, "label": "Chloroform (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4779, "label": "Cleanup (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2085, "label": "Covid (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2113, "label": "Drug (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1172, "label": "Itch (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1315, "label": "Scratch (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2674, "label": "Mimosa (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3489, "label": "Antibiotic (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2082, "label": "Infection (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3647, "label": "Measles (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2944, "label": "Painkiller (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3124, "label": "Paracetamol (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3095, "label": "Penicillin (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1428, "label": "Therapy (10)", "shape": "ellipse"}, {"color": "goldenrod", "id": 3364, "label": "Lobotomy (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1714, "label": "Prozac (12)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 2, "to": 2644}, {"arrows": "to", "from": 1, "to": 634}, {"arrows": "to", "from": 26, "to": 634}, {"arrows": "to", "from": 1943, "to": 634}, {"arrows": "to", "from": 65, "to": 288}, {"arrows": "to", "from": 144, "to": 288}, {"arrows": "to", "from": 159, "to": 634}, {"arrows": "to", "from": 127, "to": 263}, {"arrows": "to", "from": 2083, "to": 872}, {"arrows": "to", "from": 1586, "to": 1497}, {"arrows": "to", "from": 995, "to": 1272}, {"arrows": "to", "from": 2644, "to": 2}, {"arrows": "to", "from": 288, "to": 144}, {"arrows": "to", "from": 424, "to": 628}, {"arrows": "to", "from": 374, "to": 433}, {"arrows": "to", "from": 3192, "to": 288}, {"arrows": "to", "from": 1016, "to": 634}, {"arrows": "to", "from": 5404, "to": 2086}, {"arrows": "to", "from": 263, "to": 424}, {"arrows": "to", "from": 804, "to": 993}, {"arrows": "to", "from": 1029, "to": 805}, {"arrows": "to", "from": 452, "to": 3185}, {"arrows": "to", "from": 892, "to": 892}, {"arrows": "to", "from": 435, "to": 676}, {"arrows": "to", "from": 628, "to": 805}, {"arrows": "to", "from": 660, "to": 439}, {"arrows": "to", "from": 433, "to": 374}, {"arrows": "to", "from": 568, "to": 1114}, {"arrows": "to", "from": 845, "to": 805}, {"arrows": "to", "from": 993, "to": 804}, {"arrows": "to", "from": 634, "to": 872}, {"arrows": "to", "from": 1496, "to": 2086}, {"arrows": "to", "from": 676, "to": 634}, {"arrows": "to", "from": 439, "to": 660}, {"arrows": "to", "from": 3087, "to": 872}, {"arrows": "to", "from": 1497, "to": 1586}, {"arrows": "to", "from": 2880, "to": 2882}, {"arrows": "to", "from": 826, "to": 995}, {"arrows": "to", "from": 4038, "to": 634}, {"arrows": "to", "from": 1114, "to": 568}, {"arrows": "to", "from": 1272, "to": 2086}, {"arrows": "to", "from": 2882, "to": 2880}, {"arrows": "to", "from": 2464, "to": 3487}, {"arrows": "to", "from": 8275, "to": 634}, {"arrows": "to", "from": 2175, "to": 872}, {"arrows": "to", "from": 872, "to": 634}, {"arrows": "to", "from": 858, "to": 634}, {"arrows": "to", "from": 805, "to": 872}, {"arrows": "to", "from": 2114, "to": 634}, {"arrows": "to", "from": 875, "to": 1038}, {"arrows": "to", "from": 1627, "to": 2086}, {"arrows": "to", "from": 3185, "to": 452}, {"arrows": "to", "from": 637, "to": 826}, {"arrows": "to", "from": 758, "to": 452}, {"arrows": "to", "from": 2086, "to": 2087}, {"arrows": "to", "from": 2080, "to": 2086}, {"arrows": "to", "from": 1143, "to": 452}, {"arrows": "to", "from": 3094, "to": 634}, {"arrows": "to", "from": 9461, "to": 1497}, {"arrows": "to", "from": 4779, "to": 2880}, {"arrows": "to", "from": 2085, "to": 2086}, {"arrows": "to", "from": 2113, "to": 634}, {"arrows": "to", "from": 2087, "to": 2086}, {"arrows": "to", "from": 3487, "to": 2464}, {"arrows": "to", "from": 1172, "to": 1315}, {"arrows": "to", "from": 2674, "to": 288}, {"arrows": "to", "from": 1038, "to": 1172}, {"arrows": "to", "from": 3489, "to": 2083}, {"arrows": "to", "from": 2082, "to": 872}, {"arrows": "to", "from": 3647, "to": 2086}, {"arrows": "to", "from": 2944, "to": 634}, {"arrows": "to", "from": 3124, "to": 858}, {"arrows": "to", "from": 3095, "to": 2082}, {"arrows": "to", "from": 1315, "to": 1172}, {"arrows": "to", "from": 1428, "to": 634}, {"arrows": "to", "from": 3364, "to": 805}, {"arrows": "to", "from": 1714, "to": 2175}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

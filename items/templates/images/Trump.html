@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 79, "label": "Disaster (4)", "shape": "ellipse"}, {"color": "goldenrod", "id": 2192, "label": "President (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 193, "label": "Explosion (5)", "shape": "ellipse"}, {"color": "goldenrod", "id": 1244, "label": "Trump (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2018, "label": "Bankrupt (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 427, "label": "God (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 425, "label": "King (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 544, "label": "Lunatic (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 431, "label": "Prison (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 885, "label": "Toxic Waste (6)", "shape": "ellipse"}, {"color": "goldenrod", "id": 1383, "label": "Trash (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 470, "label": "America (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 757, "label": "??? (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2190, "label": "Billionaire (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 892, "label": "Cocaine (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2870, "label": "Dump (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1582, "label": "Epidemic (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3100, "label": "Trumpdemic (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1033, "label": "Poem (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3828, "label": "Tweet (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2926, "label": "Russia (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8536, "label": "Collusion (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2232, "label": "Celebrity (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1154, "label": "Darth Vader (8)", "shape": "ellipse"}, {"color": "#6c757d", "id": 8511, "label": "Darth Trump (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 785, "label": "Fake (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 812, "label": "Joker (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1241, "label": "Mental Hospital (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3361, "label": "White House (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3644, "label": "New Yorker (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5108, "label": "Oligarch (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3220, "label": "Putin (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 807, "label": "Politician (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1161, "label": "Politics (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3827, "label": "Twitter (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5125, "label": "Bromance (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 726, "label": "Richest (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2234, "label": "Scandal (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2235, "label": "News (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1039, "label": "Sinner (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1247, "label": "Super Death Star (8)", "shape": "ellipse"}, {"color": "#6c757d", "id": 6013, "label": "Trump Death Star (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2191, "label": "Trillionaire (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2239, "label": "Truth (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6621, "label": "Big Mac (9)", "shape": "ellipse"}, {"color": "#6c757d", "id": 8229, "label": "Big Trump (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3525, "label": "Bogus (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5256, "label": "Bromp (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3076, "label": "Capitalism (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7237, "label": "Trumpism (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 9516, "label": "Impeachment (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4454, "label": "Dobby is a free elf (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3221, "label": "Donald Trump (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2901, "label": "Election (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1344, "label": "Riot (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6543, "label": "Frenemy (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4814, "label": "Heartbreak (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1015, "label": "Heartless (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4925, "label": "Injustice (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2126, "label": "Malware (9)", "shape": "ellipse"}, {"color": "#6c757d", "id": 3526, "label": "Maltrump (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1242, "label": "Psycho (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6098, "label": "Redneck (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3101, "label": "Trumpocalypse (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4058, "label": "Washington (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7173, "label": "Trump Tower (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1349, "label": "Arrogance (10)", "shape": "ellipse"}, {"color": "#6c757d", "id": 9517, "label": "Bigger Trump (11)", "shape": "ellipse"}, {"color": "#6c757d", "id": 260, "label": "[not] (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6246, "label": "Detest (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8802, "label": "Trumpet (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2156, "label": "Epic Fail (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2237, "label": "Fake News (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2238, "label": "True (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2841, "label": "Obama (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2236, "label": "Propaganda (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3994, "label": "Spain (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5255, "label": "Wikileaks (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4401, "label": "Clinton (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4444, "label": "Kung Fu Panda 3 (11)", "shape": "ellipse"}, {"color": "#6c757d", "id": 4452, "label": "Kung Fu Trump (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6491, "label": "Nevermore (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6642, "label": "2016 (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3132, "label": "21 (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7456, "label": "Cheater (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3705, "label": "Stupidity (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1585, "label": "Done (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4202, "label": "World War Iii (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3996, "label": "Donald (14)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7423, "label": "Facebook (15)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7816, "label": "McDonald (15)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7823, "label": "McTrump (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6945, "label": "Brexit (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6995, "label": "Ching Chong (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7399, "label": "Deportation (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6959, "label": "Dumb (18)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7070, "label": "Fascism (29)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 79, "to": 2192}, {"arrows": "to", "from": 193, "to": 1244}, {"arrows": "to", "from": 2018, "to": 2192}, {"arrows": "to", "from": 427, "to": 1244}, {"arrows": "to", "from": 425, "to": 1244}, {"arrows": "to", "from": 544, "to": 2192}, {"arrows": "to", "from": 431, "to": 431}, {"arrows": "to", "from": 885, "to": 2192}, {"arrows": "to", "from": 1383, "to": 2192}, {"arrows": "to", "from": 470, "to": 757}, {"arrows": "to", "from": 2190, "to": 2192}, {"arrows": "to", "from": 892, "to": 2192}, {"arrows": "to", "from": 2870, "to": 1383}, {"arrows": "to", "from": 1582, "to": 3100}, {"arrows": "to", "from": 1033, "to": 3828}, {"arrows": "to", "from": 2926, "to": 8536}, {"arrows": "to", "from": 757, "to": 757}, {"arrows": "to", "from": 2232, "to": 2192}, {"arrows": "to", "from": 1154, "to": 8511}, {"arrows": "to", "from": 785, "to": 2192}, {"arrows": "to", "from": 812, "to": 1244}, {"arrows": "to", "from": 1241, "to": 3361}, {"arrows": "to", "from": 3644, "to": 1244}, {"arrows": "to", "from": 5108, "to": 3220}, {"arrows": "to", "from": 807, "to": 1244}, {"arrows": "to", "from": 1161, "to": 3827}, {"arrows": "to", "from": 3220, "to": 5125}, {"arrows": "to", "from": 726, "to": 1244}, {"arrows": "to", "from": 2234, "to": 2235}, {"arrows": "to", "from": 1039, "to": 2192}, {"arrows": "to", "from": 1247, "to": 6013}, {"arrows": "to", "from": 2191, "to": 2018}, {"arrows": "to", "from": 1244, "to": 1244}, {"arrows": "to", "from": 2239, "to": 3827}, {"arrows": "to", "from": 6621, "to": 8229}, {"arrows": "to", "from": 3525, "to": 2192}, {"arrows": "to", "from": 5125, "to": 5256}, {"arrows": "to", "from": 3076, "to": 7237}, {"arrows": "to", "from": 8536, "to": 9516}, {"arrows": "to", "from": 8511, "to": 8511}, {"arrows": "to", "from": 4454, "to": 757}, {"arrows": "to", "from": 3221, "to": 3221}, {"arrows": "to", "from": 2901, "to": 1344}, {"arrows": "to", "from": 6543, "to": 1244}, {"arrows": "to", "from": 4814, "to": 470}, {"arrows": "to", "from": 1015, "to": 807}, {"arrows": "to", "from": 4925, "to": 470}, {"arrows": "to", "from": 2126, "to": 3526}, {"arrows": "to", "from": 2235, "to": 785}, {"arrows": "to", "from": 2192, "to": 1244}, {"arrows": "to", "from": 1242, "to": 2192}, {"arrows": "to", "from": 6098, "to": 2192}, {"arrows": "to", "from": 6013, "to": 6013}, {"arrows": "to", "from": 3100, "to": 3101}, {"arrows": "to", "from": 3828, "to": 3827}, {"arrows": "to", "from": 3827, "to": 3828}, {"arrows": "to", "from": 4058, "to": 7173}, {"arrows": "to", "from": 3361, "to": 431}, {"arrows": "to", "from": 1349, "to": 2192}, {"arrows": "to", "from": 8229, "to": 9517}, {"arrows": "to", "from": 5256, "to": 260}, {"arrows": "to", "from": 6246, "to": 8802}, {"arrows": "to", "from": 2156, "to": 2192}, {"arrows": "to", "from": 2237, "to": 2238}, {"arrows": "to", "from": 9516, "to": 757}, {"arrows": "to", "from": 3526, "to": 3526}, {"arrows": "to", "from": 2841, "to": 1244}, {"arrows": "to", "from": 2236, "to": 2237}, {"arrows": "to", "from": 1344, "to": 470}, {"arrows": "to", "from": 3994, "to": 3994}, {"arrows": "to", "from": 7173, "to": 7173}, {"arrows": "to", "from": 7237, "to": 7237}, {"arrows": "to", "from": 3101, "to": 3101}, {"arrows": "to", "from": 5255, "to": 2239}, {"arrows": "to", "from": 9517, "to": 1244}, {"arrows": "to", "from": 4401, "to": 2192}, {"arrows": "to", "from": 4444, "to": 4452}, {"arrows": "to", "from": 6491, "to": 1033}, {"arrows": "to", "from": 2238, "to": 785}, {"arrows": "to", "from": 8802, "to": 8802}, {"arrows": "to", "from": 6642, "to": 757}, {"arrows": "to", "from": 3132, "to": 1244}, {"arrows": "to", "from": 7456, "to": 2192}, {"arrows": "to", "from": 4452, "to": 1244}, {"arrows": "to", "from": 3705, "to": 2192}, {"arrows": "to", "from": 1585, "to": 2870}, {"arrows": "to", "from": 4202, "to": 1244}, {"arrows": "to", "from": 3996, "to": 2192}, {"arrows": "to", "from": 7423, "to": 2237}, {"arrows": "to", "from": 7816, "to": 7823}, {"arrows": "to", "from": 6945, "to": 4202}, {"arrows": "to", "from": 6995, "to": 7399}, {"arrows": "to", "from": 7823, "to": 7823}, {"arrows": "to", "from": 7399, "to": 470}, {"arrows": "to", "from": 6959, "to": 2192}, {"arrows": "to", "from": 7070, "to": 7237}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

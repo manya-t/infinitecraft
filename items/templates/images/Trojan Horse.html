@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 2, "label": "Fire (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1499, "label": "Troy (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1, "label": "Water (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 360, "label": "Boat (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1633, "label": "Horse (6)", "shape": "ellipse"}, {"color": "goldenrod", "id": 1600, "label": "Tomato (6)", "shape": "ellipse"}, {"color": "goldenrod", "id": 3276, "label": "Ketchup (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 625, "label": "War (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1734, "label": "Victory (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2257, "label": "Odysseus (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1693, "label": "Stable (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1162, "label": "Archer (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1261, "label": "Arrow (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1672, "label": "Pop Star (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2376, "label": "Justin Bieber (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1735, "label": "Stallion (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1704, "label": "Tomato Soup (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1581, "label": "Trojan (8)", "shape": "ellipse"}, {"color": "goldenrod", "id": 1694, "label": "Trojan Horse (8)", "shape": "ellipse"}, {"color": "#6c757d", "id": 9237, "label": "Justin Trojan (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2080, "label": "Virus (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2127, "label": "Trojan Virus (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3813, "label": "Achilles Heel (10)", "shape": "ellipse"}, {"color": "#6c757d", "id": 9238, "label": "Justin Trojan Horse (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2128, "label": "Computer Virus (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2065, "label": "Trophy (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2462, "label": "Trojan War (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2162, "label": "Great Karma (11)", "shape": "ellipse"}, {"color": "#6c757d", "id": 8749, "label": "Great Trojan Horse (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2129, "label": "Trojan Horse Virus (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6663, "label": "Clockwork (13)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 2, "to": 1499}, {"arrows": "to", "from": 1, "to": 360}, {"arrows": "to", "from": 360, "to": 1499}, {"arrows": "to", "from": 1633, "to": 1499}, {"arrows": "to", "from": 1600, "to": 3276}, {"arrows": "to", "from": 625, "to": 1734}, {"arrows": "to", "from": 3276, "to": 1600}, {"arrows": "to", "from": 2257, "to": 1499}, {"arrows": "to", "from": 1693, "to": 1499}, {"arrows": "to", "from": 1499, "to": 625}, {"arrows": "to", "from": 1162, "to": 2257}, {"arrows": "to", "from": 1261, "to": 1162}, {"arrows": "to", "from": 1672, "to": 2376}, {"arrows": "to", "from": 1735, "to": 1499}, {"arrows": "to", "from": 1704, "to": 1600}, {"arrows": "to", "from": 1581, "to": 1499}, {"arrows": "to", "from": 1694, "to": 1694}, {"arrows": "to", "from": 2376, "to": 9237}, {"arrows": "to", "from": 1734, "to": 1499}, {"arrows": "to", "from": 2080, "to": 2127}, {"arrows": "to", "from": 3813, "to": 1499}, {"arrows": "to", "from": 9237, "to": 9238}, {"arrows": "to", "from": 2127, "to": 2128}, {"arrows": "to", "from": 2065, "to": 2462}, {"arrows": "to", "from": 2128, "to": 2127}, {"arrows": "to", "from": 2162, "to": 8749}, {"arrows": "to", "from": 9238, "to": 9238}, {"arrows": "to", "from": 2129, "to": 2128}, {"arrows": "to", "from": 2462, "to": 1581}, {"arrows": "to", "from": 6663, "to": 1499}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

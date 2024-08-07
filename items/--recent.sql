@@ -8,23 +8,24 @@ WHERE t.id<10
 ORDER BY t.id */
  
 --missing
-/*
-SELECT max(i1.tier, i2.tier)+1, i1.tier+i2.tier, i1.name, i1.tier, i2.name, i2.tier, i1.timeUpdated, i2.timeUpdated, i1.isReal, i2.isReal
+
+SELECT o.name, max(i1.tier, i2.tier)+1, i1.tier+i2.tier, i1.name, i1.tier, i2.name, i2.tier, i1.timeUpdated, i2.timeUpdated, i1.isReal, i2.isReal
 FROM
 items_item i1
 CROSS JOIN items_item i2
 LEFT JOIN items_itempair p on 
     (p.first_input_id=i1.id and p.second_input_id = i2.id)
     OR (p.first_input_id=i2.id and p.second_input_id = i1.id)
+left join items_transformation t on t.input_pair_id=p.id
+LEFT join items_item o on o.id = t.output_id
 WHERE 
---(max(i1.tier, i2.tier)+1)=4 and
---i2.tier<=i1.tier and
-p.id is null
-and i1.name='Sub'
+--(max(i1.tier, i2.tier)+1)=5 and
+--i2.tier<=i1.tier
+t.id is null
+and i1.name='Pyramid'
 and i1.isReal=1 and i2.isReal=1
 ORDER BY max(i1.tier, i2.tier), i1.tier+i2.tier, i1.timeUpdated, i2.timeUpdated
-*/
-
+`   
 --recently newly made or optimized items
 /* SELECT o.name, o.tier, i1.name, i1.tier, i2.name, i2.tier
 FROM 
@@ -44,7 +45,7 @@ JOIN items_transformation from_t on from_t.id = p.from_AB_C_id
 where t.id is null and i1.isReal=1 and i2.isReal=1
 order by i1.tier+i2.tier, from_t.timeCreated DESC  */
 
-SELECT o.name, count(*) as num, CASE WHEN o.isReal THEN 'Real' ELSE '' END as real
+/* SELECT o.name, count(*) as num, CASE WHEN o.isReal THEN 'Real' ELSE '' END as real
 from
 items_item i1
 JOIN items_itempair p on p.first_input_id=i1.id
@@ -55,4 +56,4 @@ where
 'Romeo and Juliet'
  in (i1.name, i2.name)
 group by output_id, o.name, o.isReal
-order by num desc, o.isReal desc
+order by num desc, o.isReal desc */

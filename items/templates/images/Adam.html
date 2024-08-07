@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 1, "label": "Water (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 668, "label": "Eve (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 77, "label": "Clay (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 424, "label": "Human (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 121, "label": "Apple (5)", "shape": "ellipse"}, {"color": "#6c757d", "id": 172, "label": "Dustnami (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 772, "label": "Adamantium (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 153, "label": "Life (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 262, "label": "Love (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 138, "label": "Meteorite (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 267, "label": "Monster (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 286, "label": "Frankenstein (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 371, "label": "Paradise (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 265, "label": "Prince (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 799, "label": "Zombie (5)", "shape": "ellipse"}, {"color": "goldenrod", "id": 438, "label": "Adam (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 437, "label": "Bat (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 263, "label": "Vampire (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 466, "label": "Cinderella (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2248, "label": "Eden (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 425, "label": "King (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 773, "label": "Man (7)", "shape": "ellipse"}, {"color": "goldenrod", "id": 629, "label": "Superman (6)", "shape": "ellipse"}, {"color": "goldenrod", "id": 894, "label": "Clark Kent (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 440, "label": "Treasure (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 426, "label": "Dracula (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 667, "label": "Village (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1002, "label": "Wolverine (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2946, "label": "Bible (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 680, "label": "Hero (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3980, "label": "Lilith (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 974, "label": "Woman (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 831, "label": "Sin (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1055, "label": "Arda (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 711, "label": "Edward (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1409, "label": "Narnia (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1542, "label": "Aslan (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1060, "label": "Pomegranate (8)", "shape": "ellipse"}, {"color": "#6c757d", "id": 722, "label": "Tea-kraken (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1228, "label": "Logan (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2118, "label": "Druid (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1015, "label": "Heartless (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 899, "label": "Jacob (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1009, "label": "Abraham (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3927, "label": "Genesis (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6051, "label": "Naked (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2327, "label": "Gossip (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4857, "label": "The Beginning (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8863, "label": "Original Sin (13)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 1, "to": 668}, {"arrows": "to", "from": 77, "to": 424}, {"arrows": "to", "from": 121, "to": 668}, {"arrows": "to", "from": 172, "to": 772}, {"arrows": "to", "from": 153, "to": 668}, {"arrows": "to", "from": 262, "to": 668}, {"arrows": "to", "from": 138, "to": 668}, {"arrows": "to", "from": 267, "to": 286}, {"arrows": "to", "from": 371, "to": 668}, {"arrows": "to", "from": 265, "to": 668}, {"arrows": "to", "from": 799, "to": 286}, {"arrows": "to", "from": 438, "to": 438}, {"arrows": "to", "from": 437, "to": 263}, {"arrows": "to", "from": 466, "to": 265}, {"arrows": "to", "from": 2248, "to": 668}, {"arrows": "to", "from": 668, "to": 424}, {"arrows": "to", "from": 286, "to": 267}, {"arrows": "to", "from": 424, "to": 668}, {"arrows": "to", "from": 425, "to": 773}, {"arrows": "to", "from": 629, "to": 894}, {"arrows": "to", "from": 440, "to": 668}, {"arrows": "to", "from": 263, "to": 426}, {"arrows": "to", "from": 667, "to": 668}, {"arrows": "to", "from": 772, "to": 1002}, {"arrows": "to", "from": 2946, "to": 668}, {"arrows": "to", "from": 894, "to": 629}, {"arrows": "to", "from": 426, "to": 263}, {"arrows": "to", "from": 680, "to": 629}, {"arrows": "to", "from": 3980, "to": 668}, {"arrows": "to", "from": 773, "to": 974}, {"arrows": "to", "from": 831, "to": 668}, {"arrows": "to", "from": 1055, "to": 2248}, {"arrows": "to", "from": 711, "to": 772}, {"arrows": "to", "from": 1409, "to": 1542}, {"arrows": "to", "from": 1060, "to": 668}, {"arrows": "to", "from": 722, "to": 722}, {"arrows": "to", "from": 1002, "to": 1228}, {"arrows": "to", "from": 974, "to": 262}, {"arrows": "to", "from": 1542, "to": 1409}, {"arrows": "to", "from": 2118, "to": 668}, {"arrows": "to", "from": 1015, "to": 668}, {"arrows": "to", "from": 899, "to": 1009}, {"arrows": "to", "from": 1228, "to": 1002}, {"arrows": "to", "from": 1009, "to": 668}, {"arrows": "to", "from": 3927, "to": 668}, {"arrows": "to", "from": 6051, "to": 668}, {"arrows": "to", "from": 2327, "to": 668}, {"arrows": "to", "from": 4857, "to": 668}, {"arrows": "to", "from": 8863, "to": 668}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

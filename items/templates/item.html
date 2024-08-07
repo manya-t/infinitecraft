@@ -33,6 +33,15 @@
     {% endwith %}
     <br>
 
+    <h4>Chain:</h4>
+    <br>
+    <div class="col-10">
+        {% with 'images/'|add:name_wo_special_char|add:'.html' as path %}
+            {% include path %}
+        {% endwith %}
+    </div>
+    <br>
+
     <h4>All ways to make:</h4>
     {% for tr in as_output %}
         {% include "tr_with_links.html" %}
@@ -50,21 +59,4 @@
         {{pair}}<br>
     {% endfor %}
     <br>
-
-    <h4>Chain:</h4>
-    <br>
-    {% for tr in makes %}
-        {% if tr.first_input.name == item.name %}
-            {{tr.second_input}}->{{tr.output}}<br>
-        {% else %}
-            {{tr.first_input}}->{{tr.output}}<br>
-        {% endif %}
-    {% endfor %}
-    <br>
-
-    <h4>Export:</h4>
-    <br>
-    {% for str in related %}
-        {{str}}<br>
-    {% endfor %}
 {% endblock %}

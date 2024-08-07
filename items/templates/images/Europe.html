@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 108, "label": "Continent (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2030, "label": "Eurasia (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 187, "label": "Viking (4)", "shape": "ellipse"}, {"color": "goldenrod", "id": 1299, "label": "Chaos (6)", "shape": "ellipse"}, {"color": "goldenrod", "id": 6945, "label": "Brexit (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2031, "label": "Asia (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4818, "label": "Country (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1574, "label": "France (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1054, "label": "Denmark (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2036, "label": "Cornfield (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2022, "label": "Crisis (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2025, "label": "Greece (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 968, "label": "Empire (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1690, "label": "Rome (8)", "shape": "ellipse"}, {"color": "goldenrod", "id": 2029, "label": "Europe (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1501, "label": "Paris (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1634, "label": "Italy (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2026, "label": "Athens (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2024, "label": "Bailout (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3215, "label": "Great Wall of Denmark (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2317, "label": "London (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5501, "label": "England (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2032, "label": "Euro (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2033, "label": "Eurozone (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2930, "label": "Union (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2034, "label": "Debt (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4210, "label": "Germany (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4215, "label": "Berlin (14)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4211, "label": "Unity (14)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4212, "label": "EU (15)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4213, "label": "European (16)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 108, "to": 2030}, {"arrows": "to", "from": 187, "to": 187}, {"arrows": "to", "from": 1299, "to": 6945}, {"arrows": "to", "from": 2031, "to": 2030}, {"arrows": "to", "from": 4818, "to": 1574}, {"arrows": "to", "from": 1054, "to": 187}, {"arrows": "to", "from": 2036, "to": 1574}, {"arrows": "to", "from": 2022, "to": 2025}, {"arrows": "to", "from": 968, "to": 1690}, {"arrows": "to", "from": 2029, "to": 108}, {"arrows": "to", "from": 1574, "to": 1501}, {"arrows": "to", "from": 1690, "to": 1634}, {"arrows": "to", "from": 2026, "to": 2025}, {"arrows": "to", "from": 2024, "to": 2025}, {"arrows": "to", "from": 6945, "to": 1299}, {"arrows": "to", "from": 2030, "to": 2031}, {"arrows": "to", "from": 3215, "to": 1054}, {"arrows": "to", "from": 2025, "to": 2026}, {"arrows": "to", "from": 1634, "to": 1690}, {"arrows": "to", "from": 2317, "to": 5501}, {"arrows": "to", "from": 1501, "to": 1574}, {"arrows": "to", "from": 5501, "to": 6945}, {"arrows": "to", "from": 2032, "to": 2033}, {"arrows": "to", "from": 2033, "to": 2022}, {"arrows": "to", "from": 2930, "to": 2032}, {"arrows": "to", "from": 2034, "to": 2025}, {"arrows": "to", "from": 4210, "to": 4215}, {"arrows": "to", "from": 4215, "to": 4210}, {"arrows": "to", "from": 4211, "to": 4212}, {"arrows": "to", "from": 4212, "to": 4213}, {"arrows": "to", "from": 4213, "to": 4213}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

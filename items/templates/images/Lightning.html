@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 4, "label": "Earth (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6, "label": "Volcano (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2, "label": "Fire (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 49, "label": "Sun (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1, "label": "Water (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1973, "label": "Electricity (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3, "label": "Wind (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 20, "label": "Storm (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7, "label": "Lake (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 46, "label": "Fish (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 14, "label": "Lava (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 11, "label": "Smoke (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 68, "label": "Thunder (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 12, "label": "Steam (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 83, "label": "Earthquake (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 13, "label": "Wave (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 75, "label": "Surfer (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 31, "label": "Cloud (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 19, "label": "Tree (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 483, "label": "Car (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4585, "label": "Race Car (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5228, "label": "Electric Eel (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 129, "label": "Genie (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1940, "label": "Kite (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1605, "label": "Leaf (4)", "shape": "ellipse"}, {"color": "goldenrod", "id": 74, "label": "Lightning (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 73, "label": "Obsidian (4)", "shape": "ellipse"}, {"color": "goldenrod", "id": 269, "label": "Zeus (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 120, "label": "Poseidon (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 54, "label": "Rain (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 156, "label": "Rainbow (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 465, "label": "Thor (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 99, "label": "Train (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 293, "label": "Abominable Snowman (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 276, "label": "Yeti (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 201, "label": "Astronaut (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 306, "label": "Alien (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5037, "label": "Buzz (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4223, "label": "Lightning Bug (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 861, "label": "Candle (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2857, "label": "Curiosity (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2833, "label": "Invention (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1974, "label": "Energy (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1975, "label": "Laser (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5121, "label": "Firefly (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 122, "label": "House (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 286, "label": "Frankenstein (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 267, "label": "Monster (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 199, "label": "Ozymandias (5)", "shape": "ellipse"}, {"color": "goldenrod", "id": 425, "label": "King (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 317, "label": "Pinocchio (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 602, "label": "Puppet (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 952, "label": "Speed (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 188, "label": "Temple (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 200, "label": "Thunderstorm (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 536, "label": "Tinkerbell (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 495, "label": "UFO (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 119, "label": "Wizard (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 369, "label": "Boom (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 462, "label": "Captain Hook (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 643, "label": "Peter Pan (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2832, "label": "Discovery (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 796, "label": "Home (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 644, "label": "Light (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1982, "label": "Flash (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 516, "label": "Mine (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2142, "label": "TNT (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 943, "label": "Mount Olympus (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1124, "label": "Race (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 629, "label": "Superman (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3753, "label": "Tesla (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5599, "label": "Thunderbolt (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 895, "label": "Traffic (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1406, "label": "Traffic Light (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3193, "label": "Flashlight (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 803, "label": "Gandalf (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1911, "label": "Dumbledore (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1912, "label": "Harry Potter (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4689, "label": "Power (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2992, "label": "Tesla Tower (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 989, "label": "Traffic Jam (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2715, "label": "Hermaphrodite (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3308, "label": "Surprise (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3309, "label": "Shock (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 970, "label": "Hazard (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2261, "label": "Quicksilver (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3313, "label": "Carnival (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6264, "label": "Conductor (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4722, "label": "Applause (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2382, "label": "Bolt (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3628, "label": "Electric Chair (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5571, "label": "Benjamin Franklin (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5204, "label": "Plasma (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8451, "label": "Streak (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4222, "label": "Strike (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7592, "label": "Fiat Lux (15)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5376, "label": "Grounded (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5570, "label": "Ben Franklin (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5377, "label": "Cable (17)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 4, "to": 6}, {"arrows": "to", "from": 2, "to": 49}, {"arrows": "to", "from": 1, "to": 1973}, {"arrows": "to", "from": 3, "to": 20}, {"arrows": "to", "from": 7, "to": 46}, {"arrows": "to", "from": 14, "to": 6}, {"arrows": "to", "from": 11, "to": 68}, {"arrows": "to", "from": 12, "to": 1973}, {"arrows": "to", "from": 6, "to": 83}, {"arrows": "to", "from": 13, "to": 75}, {"arrows": "to", "from": 31, "to": 68}, {"arrows": "to", "from": 20, "to": 68}, {"arrows": "to", "from": 19, "to": 2}, {"arrows": "to", "from": 483, "to": 4585}, {"arrows": "to", "from": 83, "to": 6}, {"arrows": "to", "from": 46, "to": 5228}, {"arrows": "to", "from": 129, "to": 20}, {"arrows": "to", "from": 1940, "to": 20}, {"arrows": "to", "from": 1605, "to": 19}, {"arrows": "to", "from": 74, "to": 68}, {"arrows": "to", "from": 73, "to": 269}, {"arrows": "to", "from": 120, "to": 269}, {"arrows": "to", "from": 54, "to": 68}, {"arrows": "to", "from": 156, "to": 54}, {"arrows": "to", "from": 49, "to": 156}, {"arrows": "to", "from": 75, "to": 465}, {"arrows": "to", "from": 68, "to": 20}, {"arrows": "to", "from": 99, "to": 269}, {"arrows": "to", "from": 293, "to": 276}, {"arrows": "to", "from": 201, "to": 306}, {"arrows": "to", "from": 5037, "to": 4223}, {"arrows": "to", "from": 861, "to": 2}, {"arrows": "to", "from": 2857, "to": 2833}, {"arrows": "to", "from": 5228, "to": 1973}, {"arrows": "to", "from": 1973, "to": 68}, {"arrows": "to", "from": 1974, "to": 1975}, {"arrows": "to", "from": 5121, "to": 5121}, {"arrows": "to", "from": 122, "to": 286}, {"arrows": "to", "from": 267, "to": 286}, {"arrows": "to", "from": 199, "to": 425}, {"arrows": "to", "from": 317, "to": 602}, {"arrows": "to", "from": 4585, "to": 952}, {"arrows": "to", "from": 188, "to": 269}, {"arrows": "to", "from": 465, "to": 68}, {"arrows": "to", "from": 200, "to": 20}, {"arrows": "to", "from": 536, "to": 536}, {"arrows": "to", "from": 495, "to": 306}, {"arrows": "to", "from": 119, "to": 68}, {"arrows": "to", "from": 276, "to": 293}, {"arrows": "to", "from": 269, "to": 68}, {"arrows": "to", "from": 306, "to": 495}, {"arrows": "to", "from": 369, "to": 68}, {"arrows": "to", "from": 462, "to": 643}, {"arrows": "to", "from": 2832, "to": 2833}, {"arrows": "to", "from": 286, "to": 267}, {"arrows": "to", "from": 796, "to": 122}, {"arrows": "to", "from": 2833, "to": 1973}, {"arrows": "to", "from": 425, "to": 269}, {"arrows": "to", "from": 1975, "to": 644}, {"arrows": "to", "from": 644, "to": 1982}, {"arrows": "to", "from": 4223, "to": 74}, {"arrows": "to", "from": 516, "to": 2142}, {"arrows": "to", "from": 943, "to": 269}, {"arrows": "to", "from": 643, "to": 536}, {"arrows": "to", "from": 602, "to": 317}, {"arrows": "to", "from": 1124, "to": 952}, {"arrows": "to", "from": 952, "to": 1982}, {"arrows": "to", "from": 629, "to": 629}, {"arrows": "to", "from": 3753, "to": 1973}, {"arrows": "to", "from": 5599, "to": 269}, {"arrows": "to", "from": 895, "to": 1406}, {"arrows": "to", "from": 1982, "to": 68}, {"arrows": "to", "from": 3193, "to": 4223}, {"arrows": "to", "from": 803, "to": 1911}, {"arrows": "to", "from": 1912, "to": 1912}, {"arrows": "to", "from": 4689, "to": 629}, {"arrows": "to", "from": 2142, "to": 369}, {"arrows": "to", "from": 2992, "to": 3753}, {"arrows": "to", "from": 989, "to": 1406}, {"arrows": "to", "from": 1406, "to": 989}, {"arrows": "to", "from": 1911, "to": 1912}, {"arrows": "to", "from": 2715, "to": 269}, {"arrows": "to", "from": 3308, "to": 3309}, {"arrows": "to", "from": 970, "to": 20}, {"arrows": "to", "from": 2261, "to": 1982}, {"arrows": "to", "from": 3309, "to": 68}, {"arrows": "to", "from": 3313, "to": 269}, {"arrows": "to", "from": 6264, "to": 1973}, {"arrows": "to", "from": 4722, "to": 68}, {"arrows": "to", "from": 2382, "to": 269}, {"arrows": "to", "from": 3628, "to": 286}, {"arrows": "to", "from": 5571, "to": 1973}, {"arrows": "to", "from": 5204, "to": 49}, {"arrows": "to", "from": 8451, "to": 1982}, {"arrows": "to", "from": 4222, "to": 68}, {"arrows": "to", "from": 7592, "to": 644}, {"arrows": "to", "from": 5376, "to": 5570}, {"arrows": "to", "from": 5570, "to": 1973}, {"arrows": "to", "from": 5377, "to": 4689}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,250 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 600px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 4, "label": "Earth (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8, "label": "Dust (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2, "label": "Fire (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 63, "label": "Phoenix (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1, "label": "Water (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 47, "label": "Mermaid (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3, "label": "Wind (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1941, "label": "Flying (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 298, "label": "Fairy (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7, "label": "Lake (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 11, "label": "Smoke (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1193, "label": "Devil (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 12, "label": "Steam (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 31, "label": "Cloud (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6, "label": "Volcano (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 13, "label": "Wave (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 75, "label": "Surfer (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 421, "label": "Sky (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 38, "label": "Incense (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 96, "label": "Prayer (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 41, "label": "Lily (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4481, "label": "Easter (5)", "shape": "ellipse"}, {"color": "goldenrod", "id": 125, "label": "Angel (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 490, "label": "Dust Bunny (4)", "shape": "ellipse"}, {"color": "#6c757d", "id": 5615, "label": "Dust Angel (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 448, "label": "Cupid (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 632, "label": "Ghost (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 132, "label": "Siren (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 341, "label": "Seraph (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 120, "label": "Poseidon (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 303, "label": "Saint (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 102, "label": "Rocket (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 495, "label": "UFO (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 67, "label": "Snow (4)", "shape": "ellipse"}, {"color": "#6c757d", "id": 260, "label": "[not] (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 128, "label": "Snowman (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5616, "label": "Snow Angel (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 53, "label": "Statue (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 206, "label": "Gargoyle (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 49, "label": "Sun (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4737, "label": "Halo (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 639, "label": "Jesus (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 48, "label": "Sushi (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7361, "label": "Angel Roll (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 339, "label": "Acid Rain (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 442, "label": "Bird (5)", "shape": "ellipse"}, {"color": "goldenrod", "id": 475, "label": "Pegasus (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4754, "label": "Breeze (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1157, "label": "Christmas (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1289, "label": "Santa (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 502, "label": "Cherub (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 424, "label": "Human (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4483, "label": "Easter Bunny (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 629, "label": "Superman (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 681, "label": "Fountain (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1327, "label": "Holy Water (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 263, "label": "Vampire (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 427, "label": "God (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 153, "label": "Life (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 315, "label": "Soul (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 262, "label": "Love (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 458, "label": "Mummy (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 799, "label": "Zombie (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 371, "label": "Paradise (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 455, "label": "Heaven (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 468, "label": "Archangel (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4742, "label": "Soggy (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 306, "label": "Alien (6)", "shape": "ellipse"}, {"color": "goldenrod", "id": 266, "label": "Unicorn (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 848, "label": "Demon (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 638, "label": "Christianity (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 635, "label": "Crown (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 429, "label": "Queen (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 744, "label": "Dove (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 816, "label": "Peace (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4740, "label": "Easter Angel (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 995, "label": "Fear (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 983, "label": "Hell (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4841, "label": "Higher (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 796, "label": "Home (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3232, "label": "Hope (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 660, "label": "Faith (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 471, "label": "Pharaoh (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4051, "label": "Sacrifice (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1005, "label": "Satan (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 571, "label": "Spirit (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 426, "label": "Dracula (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 836, "label": "Catholic (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 810, "label": "Pope (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 815, "label": "Catholicism (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 439, "label": "Religion (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1058, "label": "Priest (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1217, "label": "Exorcist (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3463, "label": "Ghostbusters II (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3468, "label": "Vigo (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2175, "label": "Happiness (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 775, "label": "Smile (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4998, "label": "Holy (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5420, "label": "Immortal (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 985, "label": "Osiris (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1194, "label": "Isis (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1173, "label": "Purgatory (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1012, "label": "Vatican (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1158, "label": "Elrond (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1290, "label": "Galadriel (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1192, "label": "Horus (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1329, "label": "Limbo (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3783, "label": "Vigo the Carpathian (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3516, "label": "Blessing (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2525, "label": "Good (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3784, "label": "Ghostbusters 2 (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2060, "label": "Lady of Light (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4438, "label": "Michael (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8226, "label": "Virtue (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7339, "label": "Gabriel (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6800, "label": "Pray (14)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5453, "label": "Fin (15)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6903, "label": "Angel Fish (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6902, "label": "Angelfish (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1819, "label": "Doriath (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1814, "label": "Huan (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3740, "label": "Confidence (20)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7330, "label": "Feather (22)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7329, "label": "Wings (22)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7288, "label": "Nice (25)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7290, "label": "Kindness (26)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7291, "label": "Goodness (27)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 4, "to": 8}, {"arrows": "to", "from": 2, "to": 63}, {"arrows": "to", "from": 1, "to": 47}, {"arrows": "to", "from": 3, "to": 1941}, {"arrows": "to", "from": 8, "to": 298}, {"arrows": "to", "from": 7, "to": 47}, {"arrows": "to", "from": 11, "to": 1193}, {"arrows": "to", "from": 12, "to": 31}, {"arrows": "to", "from": 6, "to": 1193}, {"arrows": "to", "from": 13, "to": 75}, {"arrows": "to", "from": 31, "to": 421}, {"arrows": "to", "from": 38, "to": 96}, {"arrows": "to", "from": 41, "to": 4481}, {"arrows": "to", "from": 125, "to": 125}, {"arrows": "to", "from": 490, "to": 5615}, {"arrows": "to", "from": 298, "to": 448}, {"arrows": "to", "from": 632, "to": 125}, {"arrows": "to", "from": 47, "to": 132}, {"arrows": "to", "from": 63, "to": 341}, {"arrows": "to", "from": 120, "to": 47}, {"arrows": "to", "from": 96, "to": 303}, {"arrows": "to", "from": 102, "to": 495}, {"arrows": "to", "from": 421, "to": 31}, {"arrows": "to", "from": 67, "to": 260}, {"arrows": "to", "from": 128, "to": 5616}, {"arrows": "to", "from": 53, "to": 206}, {"arrows": "to", "from": 49, "to": 4737}, {"arrows": "to", "from": 75, "to": 639}, {"arrows": "to", "from": 48, "to": 7361}, {"arrows": "to", "from": 339, "to": 1193}, {"arrows": "to", "from": 7361, "to": 7361}, {"arrows": "to", "from": 442, "to": 475}, {"arrows": "to", "from": 4754, "to": 3}, {"arrows": "to", "from": 1157, "to": 1289}, {"arrows": "to", "from": 448, "to": 502}, {"arrows": "to", "from": 1193, "to": 424}, {"arrows": "to", "from": 4481, "to": 4483}, {"arrows": "to", "from": 1941, "to": 629}, {"arrows": "to", "from": 681, "to": 1}, {"arrows": "to", "from": 206, "to": 53}, {"arrows": "to", "from": 4737, "to": 303}, {"arrows": "to", "from": 1327, "to": 263}, {"arrows": "to", "from": 639, "to": 427}, {"arrows": "to", "from": 153, "to": 315}, {"arrows": "to", "from": 262, "to": 448}, {"arrows": "to", "from": 458, "to": 799}, {"arrows": "to", "from": 371, "to": 455}, {"arrows": "to", "from": 303, "to": 468}, {"arrows": "to", "from": 1289, "to": 1157}, {"arrows": "to", "from": 341, "to": 502}, {"arrows": "to", "from": 132, "to": 47}, {"arrows": "to", "from": 5616, "to": 128}, {"arrows": "to", "from": 4742, "to": 260}, {"arrows": "to", "from": 495, "to": 306}, {"arrows": "to", "from": 266, "to": 475}, {"arrows": "to", "from": 799, "to": 260}, {"arrows": "to", "from": 306, "to": 848}, {"arrows": "to", "from": 468, "to": 427}, {"arrows": "to", "from": 502, "to": 448}, {"arrows": "to", "from": 638, "to": 639}, {"arrows": "to", "from": 635, "to": 429}, {"arrows": "to", "from": 848, "to": 424}, {"arrows": "to", "from": 744, "to": 816}, {"arrows": "to", "from": 4483, "to": 4740}, {"arrows": "to", "from": 995, "to": 848}, {"arrows": "to", "from": 427, "to": 639}, {"arrows": "to", "from": 455, "to": 427}, {"arrows": "to", "from": 983, "to": 1193}, {"arrows": "to", "from": 4841, "to": 427}, {"arrows": "to", "from": 796, "to": 455}, {"arrows": "to", "from": 3232, "to": 660}, {"arrows": "to", "from": 424, "to": 448}, {"arrows": "to", "from": 475, "to": 266}, {"arrows": "to", "from": 471, "to": 458}, {"arrows": "to", "from": 4051, "to": 1193}, {"arrows": "to", "from": 1005, "to": 1193}, {"arrows": "to", "from": 315, "to": 571}, {"arrows": "to", "from": 571, "to": 632}, {"arrows": "to", "from": 629, "to": 639}, {"arrows": "to", "from": 263, "to": 426}, {"arrows": "to", "from": 836, "to": 810}, {"arrows": "to", "from": 815, "to": 810}, {"arrows": "to", "from": 426, "to": 263}, {"arrows": "to", "from": 4740, "to": 4481}, {"arrows": "to", "from": 660, "to": 439}, {"arrows": "to", "from": 816, "to": 455}, {"arrows": "to", "from": 810, "to": 639}, {"arrows": "to", "from": 1058, "to": 810}, {"arrows": "to", "from": 429, "to": 448}, {"arrows": "to", "from": 439, "to": 638}, {"arrows": "to", "from": 1217, "to": 848}, {"arrows": "to", "from": 3463, "to": 3468}, {"arrows": "to", "from": 2175, "to": 775}, {"arrows": "to", "from": 4998, "to": 427}, {"arrows": "to", "from": 5420, "to": 427}, {"arrows": "to", "from": 985, "to": 1194}, {"arrows": "to", "from": 1173, "to": 848}, {"arrows": "to", "from": 1012, "to": 810}, {"arrows": "to", "from": 1158, "to": 1290}, {"arrows": "to", "from": 1192, "to": 1194}, {"arrows": "to", "from": 1194, "to": 985}, {"arrows": "to", "from": 1329, "to": 1193}, {"arrows": "to", "from": 3468, "to": 3783}, {"arrows": "to", "from": 3516, "to": 303}, {"arrows": "to", "from": 1290, "to": 1158}, {"arrows": "to", "from": 2525, "to": 303}, {"arrows": "to", "from": 3783, "to": 3784}, {"arrows": "to", "from": 3784, "to": 3468}, {"arrows": "to", "from": 2060, "to": 468}, {"arrows": "to", "from": 4438, "to": 468}, {"arrows": "to", "from": 8226, "to": 303}, {"arrows": "to", "from": 7339, "to": 468}, {"arrows": "to", "from": 6800, "to": 96}, {"arrows": "to", "from": 5453, "to": 6903}, {"arrows": "to", "from": 6903, "to": 125}, {"arrows": "to", "from": 6902, "to": 125}, {"arrows": "to", "from": 1819, "to": 1290}, {"arrows": "to", "from": 1814, "to": 448}, {"arrows": "to", "from": 3740, "to": 1193}, {"arrows": "to", "from": 7330, "to": 442}, {"arrows": "to", "from": 7329, "to": 1941}, {"arrows": "to", "from": 7288, "to": 1289}, {"arrows": "to", "from": 7290, "to": 303}, {"arrows": "to", "from": 7291, "to": 427}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

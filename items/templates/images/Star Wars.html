@@ -1,0 +1,250 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 600px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 4, "label": "Earth (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 981, "label": "Death Star (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2, "label": "Fire (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1154, "label": "Darth Vader (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1, "label": "Water (1)", "shape": "ellipse"}, {"color": "goldenrod", "id": 808, "label": "Star Wars (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3, "label": "Wind (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5, "label": "Tornado (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 11, "label": "Smoke (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 15, "label": "Planet (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 22, "label": "Sand (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5045, "label": "Tatooine (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 79, "label": "Disaster (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 9906, "label": "Jar Jar Binks (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 45, "label": "Moon (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 67, "label": "Snow (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5065, "label": "Hoth (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 61, "label": "Star (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 49, "label": "Sun (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 182, "label": "Asteroid (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 445, "label": "Dirt (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5043, "label": "Jabba (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 193, "label": "Explosion (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 152, "label": "Galaxy (5)", "shape": "ellipse"}, {"color": "#6c757d", "id": 260, "label": "[not] (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 397, "label": "Space (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 283, "label": "City (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 621, "label": "Farmer (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1463, "label": "Luke Skywalker (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 427, "label": "God (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 987, "label": "Yoda (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 622, "label": "Lord of the Rings (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 979, "label": "The Hobbit (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 268, "label": "Princess (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1020, "label": "Leia (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 431, "label": "Prison (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 493, "label": "Romance (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1498, "label": "Han Solo (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 625, "label": "War (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5040, "label": "Art of War (7)", "shape": "ellipse"}, {"color": "#6c757d", "id": 7186, "label": "Art Of The Clone Wars (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 806, "label": "Battle (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5859, "label": "Star Wars Battlefront (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 589, "label": "Black Dwarf (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 573, "label": "Disney (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5061, "label": "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 803, "label": "Gandalf (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1976, "label": "Laser Beam (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 802, "label": "Sauron (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3244, "label": "Stardust (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5042, "label": "Star Dust (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 809, "label": "Warrior (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1166, "label": "Jedi (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1055, "label": "Arda (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8989, "label": "The Clone Wars (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2253, "label": "Ceres (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1401, "label": "Chewbacca (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 968, "label": "Empire (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2471, "label": "Harrison Ford (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5066, "label": "Empire Strikes Back (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5044, "label": "Jabba the Hutt (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3610, "label": "Light Saber (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4473, "label": "Soldier (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5062, "label": "Stormtrooper (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5860, "label": "Star Wars Battlefront II (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 637, "label": "Terrorist (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2933, "label": "Star Trek (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5053, "label": "Boba Fett (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2180, "label": "Clone (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3436, "label": "Clone Wars (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 830, "label": "Darkest Night (9)", "shape": "ellipse"}, {"color": "#6c757d", "id": 1150, "label": "Star Wars: Darkest Night (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1575, "label": "Kylo Ren (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1417, "label": "Luke (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1597, "label": "Millennium Falcon (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5350, "label": "Mos Eisley (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8449, "label": "Cantina (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2473, "label": "Princess Leia (9)", "shape": "ellipse"}, {"color": "#6c757d", "id": 2934, "label": "Star Trek Wars (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1341, "label": "Stargate (9)", "shape": "ellipse"}, {"color": "#6c757d", "id": 9738, "label": "Star Gate Wars (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1646, "label": "Ben Solo (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5076, "label": "Star Wars: The Clone Wars (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2931, "label": "Federation (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5063, "label": "First Order (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8982, "label": "The Force Awakens (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1665, "label": "Rey (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2950, "label": "Salvation (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3075, "label": "Start (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5070, "label": "Clone Army (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2932, "label": "Galactic Empire (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5057, "label": "Padme (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5058, "label": "Natalie Portman (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1340, "label": "Slave (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2935, "label": "Starfleet (11)", "shape": "ellipse"}, {"color": "#6c757d", "id": 7109, "label": "Star Wars: The Next Generation (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8988, "label": "Star Wars: The Force Awakens (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2597, "label": "Bounty Hunter (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5071, "label": "Clone Trooper (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5059, "label": "Queen Amidala (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3742, "label": "Star Command (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8984, "label": "The Rise of Skywalker (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8986, "label": "Star Wars: The Rise Of Skywalker (14)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8757, "label": "Galactic Civil War (14)", "shape": "ellipse"}, {"color": "#6c757d", "id": 8990, "label": "Star Wars: Galactic Civil War (15)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3370, "label": "Akallabeth (15)", "shape": "ellipse"}, {"color": "#6c757d", "id": 5561, "label": "Star Wars: Akallabeth (16)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 4, "to": 981}, {"arrows": "to", "from": 2, "to": 1154}, {"arrows": "to", "from": 1, "to": 808}, {"arrows": "to", "from": 3, "to": 5}, {"arrows": "to", "from": 11, "to": 1154}, {"arrows": "to", "from": 5, "to": 5}, {"arrows": "to", "from": 15, "to": 981}, {"arrows": "to", "from": 22, "to": 5045}, {"arrows": "to", "from": 79, "to": 9906}, {"arrows": "to", "from": 45, "to": 981}, {"arrows": "to", "from": 67, "to": 5065}, {"arrows": "to", "from": 61, "to": 981}, {"arrows": "to", "from": 49, "to": 61}, {"arrows": "to", "from": 182, "to": 981}, {"arrows": "to", "from": 445, "to": 5043}, {"arrows": "to", "from": 193, "to": 981}, {"arrows": "to", "from": 152, "to": 260}, {"arrows": "to", "from": 397, "to": 981}, {"arrows": "to", "from": 283, "to": 981}, {"arrows": "to", "from": 621, "to": 1463}, {"arrows": "to", "from": 427, "to": 987}, {"arrows": "to", "from": 622, "to": 979}, {"arrows": "to", "from": 268, "to": 1020}, {"arrows": "to", "from": 431, "to": 5043}, {"arrows": "to", "from": 493, "to": 1498}, {"arrows": "to", "from": 625, "to": 808}, {"arrows": "to", "from": 5040, "to": 7186}, {"arrows": "to", "from": 806, "to": 5859}, {"arrows": "to", "from": 589, "to": 1154}, {"arrows": "to", "from": 981, "to": 808}, {"arrows": "to", "from": 573, "to": 5061}, {"arrows": "to", "from": 803, "to": 987}, {"arrows": "to", "from": 1976, "to": 981}, {"arrows": "to", "from": 802, "to": 1154}, {"arrows": "to", "from": 808, "to": 808}, {"arrows": "to", "from": 3244, "to": 5042}, {"arrows": "to", "from": 809, "to": 1166}, {"arrows": "to", "from": 5061, "to": 260}, {"arrows": "to", "from": 1055, "to": 622}, {"arrows": "to", "from": 7186, "to": 8989}, {"arrows": "to", "from": 2253, "to": 9906}, {"arrows": "to", "from": 1401, "to": 1498}, {"arrows": "to", "from": 1154, "to": 1154}, {"arrows": "to", "from": 968, "to": 260}, {"arrows": "to", "from": 1498, "to": 2471}, {"arrows": "to", "from": 5065, "to": 5066}, {"arrows": "to", "from": 5043, "to": 5044}, {"arrows": "to", "from": 9906, "to": 79}, {"arrows": "to", "from": 1166, "to": 987}, {"arrows": "to", "from": 1020, "to": 268}, {"arrows": "to", "from": 3610, "to": 1166}, {"arrows": "to", "from": 1463, "to": 1166}, {"arrows": "to", "from": 4473, "to": 5062}, {"arrows": "to", "from": 5042, "to": 808}, {"arrows": "to", "from": 5859, "to": 5860}, {"arrows": "to", "from": 5045, "to": 1463}, {"arrows": "to", "from": 637, "to": 260}, {"arrows": "to", "from": 979, "to": 2933}, {"arrows": "to", "from": 987, "to": 1166}, {"arrows": "to", "from": 5053, "to": 5053}, {"arrows": "to", "from": 2180, "to": 3436}, {"arrows": "to", "from": 830, "to": 1150}, {"arrows": "to", "from": 5066, "to": 5066}, {"arrows": "to", "from": 2471, "to": 1498}, {"arrows": "to", "from": 5044, "to": 260}, {"arrows": "to", "from": 1575, "to": 1154}, {"arrows": "to", "from": 1417, "to": 1166}, {"arrows": "to", "from": 1597, "to": 1498}, {"arrows": "to", "from": 5350, "to": 8449}, {"arrows": "to", "from": 2473, "to": 260}, {"arrows": "to", "from": 2933, "to": 2934}, {"arrows": "to", "from": 5860, "to": 5860}, {"arrows": "to", "from": 1341, "to": 9738}, {"arrows": "to", "from": 5062, "to": 1154}, {"arrows": "to", "from": 8989, "to": 8989}, {"arrows": "to", "from": 1646, "to": 1575}, {"arrows": "to", "from": 8449, "to": 5350}, {"arrows": "to", "from": 3436, "to": 5076}, {"arrows": "to", "from": 2931, "to": 2933}, {"arrows": "to", "from": 5063, "to": 8982}, {"arrows": "to", "from": 1665, "to": 1166}, {"arrows": "to", "from": 2950, "to": 1166}, {"arrows": "to", "from": 9738, "to": 9738}, {"arrows": "to", "from": 2934, "to": 2934}, {"arrows": "to", "from": 1150, "to": 1150}, {"arrows": "to", "from": 3075, "to": 808}, {"arrows": "to", "from": 5070, "to": 968}, {"arrows": "to", "from": 2932, "to": 260}, {"arrows": "to", "from": 5057, "to": 5058}, {"arrows": "to", "from": 1340, "to": 1154}, {"arrows": "to", "from": 5076, "to": 5076}, {"arrows": "to", "from": 2935, "to": 7109}, {"arrows": "to", "from": 8982, "to": 8988}, {"arrows": "to", "from": 2597, "to": 5053}, {"arrows": "to", "from": 5071, "to": 5062}, {"arrows": "to", "from": 5058, "to": 5059}, {"arrows": "to", "from": 3742, "to": 2933}, {"arrows": "to", "from": 8988, "to": 8988}, {"arrows": "to", "from": 7109, "to": 7109}, {"arrows": "to", "from": 5059, "to": 5058}, {"arrows": "to", "from": 8984, "to": 8986}, {"arrows": "to", "from": 8757, "to": 8990}, {"arrows": "to", "from": 8986, "to": 260}, {"arrows": "to", "from": 3370, "to": 5561}, {"arrows": "to", "from": 8990, "to": 8990}, {"arrows": "to", "from": 5561, "to": 5561}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

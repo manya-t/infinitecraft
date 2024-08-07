@@ -1,0 +1,250 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 600px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 19, "label": "Tree (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 50, "label": "Forest (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1157, "label": "Christmas (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1378, "label": "Gifts (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 122, "label": "House (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 796, "label": "Home (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 262, "label": "Love (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 265, "label": "Prince (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 268, "label": "Princess (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1289, "label": "Santa (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 669, "label": "Vacation (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5907, "label": "Road Trip (8)", "shape": "ellipse"}, {"color": "goldenrod", "id": 430, "label": "Baby (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 633, "label": "Child (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1159, "label": "Cat (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 801, "label": "Lion (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5333, "label": "Combine (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7625, "label": "Reunion (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2648, "label": "Couch (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7630, "label": "Couch Potato (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 825, "label": "Curse (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5127, "label": "Cursed Family (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2675, "label": "Dad (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 718, "label": "Dinner (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 814, "label": "Thanksgiving (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 282, "label": "Dwarf (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5296, "label": "Dwarves (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2122, "label": "Fun (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 624, "label": "Hobbit (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 840, "label": "Shire (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1633, "label": "Horse (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6510, "label": "Carriage (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 424, "label": "Human (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5353, "label": "Jewelry (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6378, "label": "Heirloom (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 425, "label": "King (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4385, "label": "Royal (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 309, "label": "Rich (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 316, "label": "Town (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 667, "label": "Village (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1697, "label": "Tragedy (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1771, "label": "Drama (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 275, "label": "Wedding (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 576, "label": "Reception (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1137, "label": "Adult (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 9142, "label": "Parent (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1163, "label": "Ant (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1328, "label": "Colony (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 444, "label": "Bride (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 645, "label": "Church (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 626, "label": "Divorce (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5852, "label": "Dysfunctional (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 628, "label": "Doctor (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 845, "label": "Hospital (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 828, "label": "Dog (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1099, "label": "Pet (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2392, "label": "Soap Opera (8)", "shape": "ellipse"}, {"color": "goldenrod", "id": 627, "label": "Family (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5518, "label": "Birth (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1017, "label": "Pride (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1496, "label": "Plague (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1627, "label": "Quarantine (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 547, "label": "Royalty (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 811, "label": "Smaug (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1499, "label": "Troy (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1581, "label": "Trojan (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1000, "label": "Arwen (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1158, "label": "Elrond (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1297, "label": "Aunt (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1167, "label": "Uncle (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1989, "label": "Wagon (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2809, "label": "Reality (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1509, "label": "Father (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1069, "label": "Fight (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7631, "label": "Feud (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1578, "label": "Grandfather (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2350, "label": "Grandpa (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1416, "label": "Helen (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1072, "label": "Puppy (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 984, "label": "Turkey (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 647, "label": "Wife (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 855, "label": "Husband (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3435, "label": "Auntie (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1331, "label": "Elves (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7632, "label": "Game Show (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3208, "label": "Fortune (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7629, "label": "Inheritance (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1754, "label": "Grandson (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 852, "label": "Hot Dog (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5060, "label": "Incest (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1478, "label": "Mother (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3886, "label": "TV (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3956, "label": "Son (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3754, "label": "Caravan (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1347, "label": "Balrogs (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7628, "label": "Gypsy (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2614, "label": "Daughter (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1290, "label": "Galadriel (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7633, "label": "Family Feud (11)", "shape": "ellipse"}, {"color": "goldenrod", "id": 8186, "label": "Reproduce (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3446, "label": "Brother (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3445, "label": "Sister (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1479, "label": "Cousin (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4122, "label": "Duckling (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4123, "label": "Duck (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3450, "label": "Grandparent (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1717, "label": "Grandchild (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1572, "label": "Nargothrond (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6448, "label": "Threesome (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6587, "label": "Adam and Eve (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4190, "label": "Dynasty (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1663, "label": "Kitten (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3444, "label": "Sisters (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1730, "label": "Finarfin (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3908, "label": "Connection (14)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1758, "label": "F\u00ebanor (15)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6840, "label": "Grandparents (15)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6841, "label": "Ancestors (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7623, "label": "Genealogy (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4384, "label": "Father and Son (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1784, "label": "Maedhros (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1814, "label": "Huan (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7182, "label": "Kind (24)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7183, "label": "Kin (25)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7184, "label": "Clan (26)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7185, "label": "Tribe (27)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 19, "to": 50}, {"arrows": "to", "from": 50, "to": 19}, {"arrows": "to", "from": 1157, "to": 1378}, {"arrows": "to", "from": 122, "to": 796}, {"arrows": "to", "from": 262, "to": 796}, {"arrows": "to", "from": 265, "to": 268}, {"arrows": "to", "from": 1289, "to": 1157}, {"arrows": "to", "from": 669, "to": 5907}, {"arrows": "to", "from": 430, "to": 633}, {"arrows": "to", "from": 1159, "to": 801}, {"arrows": "to", "from": 5333, "to": 7625}, {"arrows": "to", "from": 2648, "to": 7630}, {"arrows": "to", "from": 825, "to": 5127}, {"arrows": "to", "from": 2675, "to": 718}, {"arrows": "to", "from": 718, "to": 814}, {"arrows": "to", "from": 282, "to": 5296}, {"arrows": "to", "from": 2122, "to": 669}, {"arrows": "to", "from": 624, "to": 840}, {"arrows": "to", "from": 796, "to": 122}, {"arrows": "to", "from": 1633, "to": 6510}, {"arrows": "to", "from": 424, "to": 430}, {"arrows": "to", "from": 5353, "to": 6378}, {"arrows": "to", "from": 425, "to": 4385}, {"arrows": "to", "from": 268, "to": 265}, {"arrows": "to", "from": 309, "to": 4385}, {"arrows": "to", "from": 316, "to": 667}, {"arrows": "to", "from": 1697, "to": 1771}, {"arrows": "to", "from": 667, "to": 316}, {"arrows": "to", "from": 275, "to": 576}, {"arrows": "to", "from": 1137, "to": 9142}, {"arrows": "to", "from": 1163, "to": 1328}, {"arrows": "to", "from": 444, "to": 275}, {"arrows": "to", "from": 633, "to": 430}, {"arrows": "to", "from": 645, "to": 275}, {"arrows": "to", "from": 626, "to": 5852}, {"arrows": "to", "from": 628, "to": 845}, {"arrows": "to", "from": 828, "to": 1099}, {"arrows": "to", "from": 1771, "to": 2392}, {"arrows": "to", "from": 627, "to": 667}, {"arrows": "to", "from": 845, "to": 5518}, {"arrows": "to", "from": 801, "to": 1017}, {"arrows": "to", "from": 1496, "to": 1627}, {"arrows": "to", "from": 576, "to": 275}, {"arrows": "to", "from": 547, "to": 425}, {"arrows": "to", "from": 840, "to": 624}, {"arrows": "to", "from": 811, "to": 624}, {"arrows": "to", "from": 1499, "to": 1581}, {"arrows": "to", "from": 1000, "to": 1158}, {"arrows": "to", "from": 1297, "to": 1167}, {"arrows": "to", "from": 5518, "to": 430}, {"arrows": "to", "from": 6510, "to": 1989}, {"arrows": "to", "from": 1328, "to": 667}, {"arrows": "to", "from": 7630, "to": 2648}, {"arrows": "to", "from": 5127, "to": 5127}, {"arrows": "to", "from": 5296, "to": 624}, {"arrows": "to", "from": 5852, "to": 2809}, {"arrows": "to", "from": 1509, "to": 2675}, {"arrows": "to", "from": 1069, "to": 7631}, {"arrows": "to", "from": 1378, "to": 1157}, {"arrows": "to", "from": 1578, "to": 2350}, {"arrows": "to", "from": 6378, "to": 5353}, {"arrows": "to", "from": 1416, "to": 1499}, {"arrows": "to", "from": 9142, "to": 633}, {"arrows": "to", "from": 1099, "to": 828}, {"arrows": "to", "from": 1017, "to": 801}, {"arrows": "to", "from": 1072, "to": 828}, {"arrows": "to", "from": 1627, "to": 1069}, {"arrows": "to", "from": 7625, "to": 2122}, {"arrows": "to", "from": 5907, "to": 669}, {"arrows": "to", "from": 4385, "to": 265}, {"arrows": "to", "from": 2392, "to": 1771}, {"arrows": "to", "from": 814, "to": 984}, {"arrows": "to", "from": 1581, "to": 1633}, {"arrows": "to", "from": 647, "to": 855}, {"arrows": "to", "from": 3435, "to": 1167}, {"arrows": "to", "from": 1158, "to": 1331}, {"arrows": "to", "from": 1331, "to": 1289}, {"arrows": "to", "from": 7631, "to": 7632}, {"arrows": "to", "from": 3208, "to": 7629}, {"arrows": "to", "from": 2350, "to": 2350}, {"arrows": "to", "from": 1754, "to": 1578}, {"arrows": "to", "from": 852, "to": 1099}, {"arrows": "to", "from": 855, "to": 647}, {"arrows": "to", "from": 5060, "to": 547}, {"arrows": "to", "from": 1478, "to": 1509}, {"arrows": "to", "from": 2809, "to": 3886}, {"arrows": "to", "from": 3956, "to": 1509}, {"arrows": "to", "from": 984, "to": 814}, {"arrows": "to", "from": 1167, "to": 1297}, {"arrows": "to", "from": 1989, "to": 3754}, {"arrows": "to", "from": 1347, "to": 811}, {"arrows": "to", "from": 3754, "to": 7628}, {"arrows": "to", "from": 2614, "to": 1478}, {"arrows": "to", "from": 1290, "to": 624}, {"arrows": "to", "from": 7632, "to": 7633}, {"arrows": "to", "from": 7629, "to": 309}, {"arrows": "to", "from": 8186, "to": 430}, {"arrows": "to", "from": 3886, "to": 2648}, {"arrows": "to", "from": 3446, "to": 3445}, {"arrows": "to", "from": 1479, "to": 1167}, {"arrows": "to", "from": 4122, "to": 4123}, {"arrows": "to", "from": 7633, "to": 7633}, {"arrows": "to", "from": 3450, "to": 1717}, {"arrows": "to", "from": 7628, "to": 3208}, {"arrows": "to", "from": 1572, "to": 282}, {"arrows": "to", "from": 6448, "to": 1479}, {"arrows": "to", "from": 6587, "to": 424}, {"arrows": "to", "from": 4123, "to": 4190}, {"arrows": "to", "from": 1663, "to": 1159}, {"arrows": "to", "from": 3445, "to": 3446}, {"arrows": "to", "from": 3444, "to": 1771}, {"arrows": "to", "from": 4190, "to": 4385}, {"arrows": "to", "from": 1730, "to": 1290}, {"arrows": "to", "from": 3908, "to": 262}, {"arrows": "to", "from": 1758, "to": 825}, {"arrows": "to", "from": 6840, "to": 7625}, {"arrows": "to", "from": 6841, "to": 7623}, {"arrows": "to", "from": 4384, "to": 627}, {"arrows": "to", "from": 1784, "to": 1697}, {"arrows": "to", "from": 7623, "to": 19}, {"arrows": "to", "from": 1814, "to": 796}, {"arrows": "to", "from": 7182, "to": 7183}, {"arrows": "to", "from": 7183, "to": 7184}, {"arrows": "to", "from": 7184, "to": 7185}, {"arrows": "to", "from": 7185, "to": 7184}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

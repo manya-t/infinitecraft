@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 2, "label": "Fire (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2136, "label": "Cannon (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1, "label": "Water (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2886, "label": "Shipwreck (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 32, "label": "Hurricane (3)", "shape": "ellipse"}, {"color": "goldenrod", "id": 264, "label": "Pirate (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 18, "label": "Tsunami (3)", "shape": "ellipse"}, {"color": "goldenrod", "id": 447, "label": "Pirate Ship (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 483, "label": "Car (4)", "shape": "ellipse"}, {"color": "#6c757d", "id": 4648, "label": "Pirate Car (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 434, "label": "River (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 440, "label": "Treasure (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 497, "label": "Steamboat (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 56, "label": "Titanic (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 653, "label": "Pirates of the Caribbean (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 187, "label": "Viking (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 335, "label": "Longboat (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 443, "label": "Captain (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 449, "label": "Cruise (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2804, "label": "Ferry (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 179, "label": "Malaria (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4681, "label": "Sick Pirate (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 317, "label": "Pinocchio (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 462, "label": "Captain Hook (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 243, "label": "Satellite (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4054, "label": "Space Pirate (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 643, "label": "Peter Pan (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1317, "label": "Cruise Ship (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 441, "label": "Cthulhu (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 354, "label": "Flock (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 834, "label": "Jack Sparrow (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1629, "label": "Piranha (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 602, "label": "Puppet (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 450, "label": "Tile (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 485, "label": "Viking Ship (6)", "shape": "ellipse"}, {"color": "#6c757d", "id": 725, "label": "Pirate Viking (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 628, "label": "Doctor (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4682, "label": "Pirate Doctor (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1796, "label": "Jolly Roger (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4683, "label": "Pirate Surgeon (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4906, "label": "Galleons (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4903, "label": "Piracy (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4709, "label": "Pirate Captain (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3686, "label": "Pirates (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5601, "label": "Ghost Ship (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5603, "label": "Ghost Pirate Ship (12)", "shape": "ellipse"}, {"color": "goldenrod", "id": 6671, "label": "Golf Course (14)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2456, "label": "Cargo Ship (15)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 2, "to": 2136}, {"arrows": "to", "from": 1, "to": 2886}, {"arrows": "to", "from": 32, "to": 264}, {"arrows": "to", "from": 18, "to": 447}, {"arrows": "to", "from": 483, "to": 4648}, {"arrows": "to", "from": 434, "to": 440}, {"arrows": "to", "from": 2886, "to": 440}, {"arrows": "to", "from": 497, "to": 447}, {"arrows": "to", "from": 56, "to": 653}, {"arrows": "to", "from": 187, "to": 335}, {"arrows": "to", "from": 2136, "to": 264}, {"arrows": "to", "from": 443, "to": 264}, {"arrows": "to", "from": 449, "to": 264}, {"arrows": "to", "from": 2804, "to": 264}, {"arrows": "to", "from": 335, "to": 187}, {"arrows": "to", "from": 179, "to": 4681}, {"arrows": "to", "from": 317, "to": 462}, {"arrows": "to", "from": 264, "to": 443}, {"arrows": "to", "from": 243, "to": 4054}, {"arrows": "to", "from": 462, "to": 643}, {"arrows": "to", "from": 1317, "to": 264}, {"arrows": "to", "from": 441, "to": 447}, {"arrows": "to", "from": 354, "to": 264}, {"arrows": "to", "from": 834, "to": 264}, {"arrows": "to", "from": 643, "to": 462}, {"arrows": "to", "from": 1629, "to": 264}, {"arrows": "to", "from": 447, "to": 447}, {"arrows": "to", "from": 602, "to": 317}, {"arrows": "to", "from": 4054, "to": 264}, {"arrows": "to", "from": 450, "to": 440}, {"arrows": "to", "from": 440, "to": 264}, {"arrows": "to", "from": 485, "to": 725}, {"arrows": "to", "from": 628, "to": 4682}, {"arrows": "to", "from": 1796, "to": 264}, {"arrows": "to", "from": 725, "to": 447}, {"arrows": "to", "from": 653, "to": 834}, {"arrows": "to", "from": 4681, "to": 628}, {"arrows": "to", "from": 4682, "to": 4683}, {"arrows": "to", "from": 4906, "to": 440}, {"arrows": "to", "from": 4903, "to": 440}, {"arrows": "to", "from": 4709, "to": 264}, {"arrows": "to", "from": 4683, "to": 264}, {"arrows": "to", "from": 3686, "to": 447}, {"arrows": "to", "from": 5601, "to": 5603}, {"arrows": "to", "from": 5603, "to": 5601}, {"arrows": "to", "from": 6671, "to": 264}, {"arrows": "to", "from": 2456, "to": 440}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

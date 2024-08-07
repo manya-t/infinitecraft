@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 126, "label": "Money (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1019, "label": "Government (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 283, "label": "City (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 424, "label": "Human (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 807, "label": "Politician (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 641, "label": "Citizen (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2226, "label": "Mafia (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4564, "label": "Protection (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2010, "label": "Profit (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2285, "label": "Loss (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2003, "label": "Bankruptcy (8)", "shape": "ellipse"}, {"color": "goldenrod", "id": 846, "label": "Tax (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1031, "label": "Corruption (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1161, "label": "Politics (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 844, "label": "Evolution (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4502, "label": "Makeup (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7176, "label": "Cosmetic (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1477, "label": "Thief (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 853, "label": "Taj Mahal (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5846, "label": "Gold Mine (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 9300, "label": "Tariff (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2245, "label": "Theft (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2250, "label": "Taxation (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4274, "label": "Audit (10)", "shape": "ellipse"}, {"color": "#6c757d", "id": 260, "label": "[not] (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2221, "label": "Net (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2258, "label": "Trap (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2227, "label": "Settlement (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 9301, "label": "Duty (11)", "shape": "ellipse"}, {"color": "#6c757d", "id": 1687, "label": "23 (11)", "shape": "ellipse"}, {"color": "#6c757d", "id": 1620, "label": "25 (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2287, "label": "Revenue (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2961, "label": "Fee (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2243, "label": "Income (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2263, "label": "Taxidermy (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3132, "label": "21 (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2767, "label": "Accountant (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3022, "label": "Payment (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4275, "label": "Auditor (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4490, "label": "IRS (14)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6659, "label": "Pays (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3555, "label": "Receipt (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2186, "label": "Salary (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2195, "label": "Net Income (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2283, "label": "Net Pay (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2284, "label": "Gross Pay (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2216, "label": "Net Profit (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2220, "label": "Net Loss (18)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2218, "label": "Gross (21)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 126, "to": 1019}, {"arrows": "to", "from": 283, "to": 126}, {"arrows": "to", "from": 424, "to": 807}, {"arrows": "to", "from": 641, "to": 1019}, {"arrows": "to", "from": 2226, "to": 4564}, {"arrows": "to", "from": 2010, "to": 2285}, {"arrows": "to", "from": 2003, "to": 846}, {"arrows": "to", "from": 1031, "to": 1161}, {"arrows": "to", "from": 844, "to": 844}, {"arrows": "to", "from": 4502, "to": 7176}, {"arrows": "to", "from": 807, "to": 1477}, {"arrows": "to", "from": 1161, "to": 1161}, {"arrows": "to", "from": 853, "to": 853}, {"arrows": "to", "from": 846, "to": 846}, {"arrows": "to", "from": 1477, "to": 807}, {"arrows": "to", "from": 7176, "to": 4502}, {"arrows": "to", "from": 5846, "to": 126}, {"arrows": "to", "from": 1019, "to": 126}, {"arrows": "to", "from": 2285, "to": 2285}, {"arrows": "to", "from": 4564, "to": 9300}, {"arrows": "to", "from": 2245, "to": 2250}, {"arrows": "to", "from": 4274, "to": 260}, {"arrows": "to", "from": 2221, "to": 2258}, {"arrows": "to", "from": 2227, "to": 126}, {"arrows": "to", "from": 9300, "to": 9301}, {"arrows": "to", "from": 2250, "to": 2250}, {"arrows": "to", "from": 1687, "to": 1620}, {"arrows": "to", "from": 9301, "to": 2287}, {"arrows": "to", "from": 2961, "to": 2287}, {"arrows": "to", "from": 2243, "to": 2245}, {"arrows": "to", "from": 2258, "to": 2263}, {"arrows": "to", "from": 3132, "to": 1687}, {"arrows": "to", "from": 2767, "to": 4274}, {"arrows": "to", "from": 3022, "to": 126}, {"arrows": "to", "from": 2287, "to": 2010}, {"arrows": "to", "from": 2263, "to": 2263}, {"arrows": "to", "from": 4275, "to": 4490}, {"arrows": "to", "from": 6659, "to": 126}, {"arrows": "to", "from": 3555, "to": 260}, {"arrows": "to", "from": 2186, "to": 2221}, {"arrows": "to", "from": 4490, "to": 4274}, {"arrows": "to", "from": 2195, "to": 2195}, {"arrows": "to", "from": 2283, "to": 2284}, {"arrows": "to", "from": 2284, "to": 2283}, {"arrows": "to", "from": 2216, "to": 2220}, {"arrows": "to", "from": 2220, "to": 2243}, {"arrows": "to", "from": 2218, "to": 2221}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

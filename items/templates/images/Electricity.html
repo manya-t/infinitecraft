@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 2, "label": "Fire (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 74, "label": "Lightning (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1, "label": "Water (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3, "label": "Wind (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 20, "label": "Storm (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 12, "label": "Steam (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 99, "label": "Train (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 483, "label": "Car (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3753, "label": "Tesla (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 68, "label": "Thunder (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 120, "label": "Poseidon (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 51, "label": "Rock (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5230, "label": "Battery (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 49, "label": "Sun (4)", "shape": "ellipse"}, {"color": "goldenrod", "id": 7205, "label": "Solar Panel (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 723, "label": "Windmill (4)", "shape": "ellipse"}, {"color": "goldenrod", "id": 1974, "label": "Energy (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2857, "label": "Curiosity (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5228, "label": "Electric Eel (5)", "shape": "ellipse"}, {"color": "goldenrod", "id": 1973, "label": "Electricity (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5271, "label": "Mars Rover (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5189, "label": "Marsquake (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 376, "label": "Robot (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2131, "label": "Cyborg (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5253, "label": "Sunset (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1971, "label": "Wind Farm (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 644, "label": "Light (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5229, "label": "Electric Fish (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1610, "label": "Industrial Revolution (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2833, "label": "Invention (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4934, "label": "Light Bulb (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4969, "label": "Bulb (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2416, "label": "Music (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7107, "label": "DJ (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4783, "label": "Niagara Falls (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4689, "label": "Power (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2885, "label": "Steam Turbine (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1972, "label": "Wind Turbine (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4898, "label": "Champagne (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7881, "label": "Sparkling (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3151, "label": "Idea (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4967, "label": "Plug (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4968, "label": "Socket (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2761, "label": "Steam Revolution (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3309, "label": "Shock (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3313, "label": "Carnival (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6264, "label": "Conductor (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6465, "label": "Jumper Cables (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5571, "label": "Benjamin Franklin (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8320, "label": "Amp (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8321, "label": "Speaker (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5376, "label": "Grounded (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5570, "label": "Ben Franklin (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5377, "label": "Cable (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5378, "label": "Wire (18)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 2, "to": 74}, {"arrows": "to", "from": 1, "to": 74}, {"arrows": "to", "from": 3, "to": 20}, {"arrows": "to", "from": 12, "to": 99}, {"arrows": "to", "from": 20, "to": 74}, {"arrows": "to", "from": 483, "to": 3753}, {"arrows": "to", "from": 74, "to": 68}, {"arrows": "to", "from": 120, "to": 74}, {"arrows": "to", "from": 51, "to": 5230}, {"arrows": "to", "from": 49, "to": 7205}, {"arrows": "to", "from": 68, "to": 74}, {"arrows": "to", "from": 99, "to": 74}, {"arrows": "to", "from": 723, "to": 1974}, {"arrows": "to", "from": 2857, "to": 74}, {"arrows": "to", "from": 5228, "to": 5230}, {"arrows": "to", "from": 1973, "to": 74}, {"arrows": "to", "from": 1974, "to": 74}, {"arrows": "to", "from": 5271, "to": 2857}, {"arrows": "to", "from": 5189, "to": 5189}, {"arrows": "to", "from": 376, "to": 2131}, {"arrows": "to", "from": 5253, "to": 49}, {"arrows": "to", "from": 1971, "to": 1974}, {"arrows": "to", "from": 5230, "to": 644}, {"arrows": "to", "from": 2131, "to": 376}, {"arrows": "to", "from": 5229, "to": 5228}, {"arrows": "to", "from": 1610, "to": 376}, {"arrows": "to", "from": 2833, "to": 4934}, {"arrows": "to", "from": 644, "to": 4969}, {"arrows": "to", "from": 2416, "to": 7107}, {"arrows": "to", "from": 4783, "to": 4689}, {"arrows": "to", "from": 7205, "to": 1974}, {"arrows": "to", "from": 2885, "to": 1973}, {"arrows": "to", "from": 3753, "to": 74}, {"arrows": "to", "from": 1972, "to": 3}, {"arrows": "to", "from": 4969, "to": 644}, {"arrows": "to", "from": 4898, "to": 7881}, {"arrows": "to", "from": 7107, "to": 74}, {"arrows": "to", "from": 4934, "to": 3151}, {"arrows": "to", "from": 4689, "to": 644}, {"arrows": "to", "from": 3151, "to": 4934}, {"arrows": "to", "from": 4967, "to": 4968}, {"arrows": "to", "from": 7881, "to": 74}, {"arrows": "to", "from": 2761, "to": 1610}, {"arrows": "to", "from": 3309, "to": 74}, {"arrows": "to", "from": 4968, "to": 644}, {"arrows": "to", "from": 3313, "to": 74}, {"arrows": "to", "from": 6264, "to": 74}, {"arrows": "to", "from": 6465, "to": 483}, {"arrows": "to", "from": 5571, "to": 74}, {"arrows": "to", "from": 8320, "to": 8321}, {"arrows": "to", "from": 5376, "to": 3309}, {"arrows": "to", "from": 5570, "to": 74}, {"arrows": "to", "from": 5377, "to": 74}, {"arrows": "to", "from": 8321, "to": 2416}, {"arrows": "to", "from": 5378, "to": 644}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

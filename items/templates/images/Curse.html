@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 458, "label": "Mummy (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 666, "label": "Tomb (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 428, "label": "Ring (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 622, "label": "Lord of the Rings (6)", "shape": "ellipse"}, {"color": "goldenrod", "id": 825, "label": "Curse (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1098, "label": "Hex (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 631, "label": "Hades (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 928, "label": "Tartarus (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 800, "label": "Gollum (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 832, "label": "Picnic (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1163, "label": "Ant (7)", "shape": "ellipse"}, {"color": "goldenrod", "id": 431, "label": "Prison (6)", "shape": "ellipse"}, {"color": "goldenrod", "id": 636, "label": "Jail (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4156, "label": "Tomb Raider (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4157, "label": "Lara Croft (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 824, "label": "Underworld (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1297, "label": "Aunt (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 627, "label": "Family (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5127, "label": "Cursed Family (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 477, "label": "Spell (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 802, "label": "Sauron (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 831, "label": "Sin (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1872, "label": "Punishment (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1167, "label": "Uncle (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1154, "label": "Darth Vader (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1160, "label": "Sith (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1184, "label": "Morgoth (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1820, "label": "Oath (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2346, "label": "Swear (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3873, "label": "Darth (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2347, "label": "Cuss (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2348, "label": "Cursing (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3874, "label": "Vader (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3528, "label": "Swearword (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3529, "label": "Cussword (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8231, "label": "Relic (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1758, "label": "F\u00ebanor (15)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1782, "label": "F\u00ebanorian (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1800, "label": "Noldor (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1798, "label": "Diorama (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1828, "label": "Cursed Diorama (18)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1808, "label": "The Children Of F\u00ebanor (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1816, "label": "The F\u00ebanorian Children (18)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1841, "label": "The Oath of F\u00ebanor (19)", "shape": "ellipse"}, {"color": "#6c757d", "id": 260, "label": "[not] (4)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 458, "to": 666}, {"arrows": "to", "from": 428, "to": 622}, {"arrows": "to", "from": 666, "to": 458}, {"arrows": "to", "from": 825, "to": 1098}, {"arrows": "to", "from": 631, "to": 928}, {"arrows": "to", "from": 622, "to": 800}, {"arrows": "to", "from": 832, "to": 1163}, {"arrows": "to", "from": 431, "to": 636}, {"arrows": "to", "from": 4156, "to": 4157}, {"arrows": "to", "from": 824, "to": 631}, {"arrows": "to", "from": 1163, "to": 1297}, {"arrows": "to", "from": 627, "to": 5127}, {"arrows": "to", "from": 800, "to": 428}, {"arrows": "to", "from": 1098, "to": 477}, {"arrows": "to", "from": 636, "to": 431}, {"arrows": "to", "from": 4157, "to": 4156}, {"arrows": "to", "from": 802, "to": 428}, {"arrows": "to", "from": 831, "to": 1872}, {"arrows": "to", "from": 477, "to": 1098}, {"arrows": "to", "from": 928, "to": 631}, {"arrows": "to", "from": 1297, "to": 1167}, {"arrows": "to", "from": 5127, "to": 5127}, {"arrows": "to", "from": 1154, "to": 1160}, {"arrows": "to", "from": 1184, "to": 802}, {"arrows": "to", "from": 1820, "to": 2346}, {"arrows": "to", "from": 1872, "to": 636}, {"arrows": "to", "from": 1160, "to": 3873}, {"arrows": "to", "from": 2346, "to": 2347}, {"arrows": "to", "from": 1167, "to": 1297}, {"arrows": "to", "from": 2347, "to": 2348}, {"arrows": "to", "from": 3873, "to": 3874}, {"arrows": "to", "from": 3528, "to": 2347}, {"arrows": "to", "from": 2348, "to": 2348}, {"arrows": "to", "from": 3529, "to": 2346}, {"arrows": "to", "from": 8231, "to": 458}, {"arrows": "to", "from": 3874, "to": 3873}, {"arrows": "to", "from": 1758, "to": 1184}, {"arrows": "to", "from": 1782, "to": 1800}, {"arrows": "to", "from": 1798, "to": 1828}, {"arrows": "to", "from": 1800, "to": 1184}, {"arrows": "to", "from": 1808, "to": 1820}, {"arrows": "to", "from": 1828, "to": 1828}, {"arrows": "to", "from": 1816, "to": 1841}, {"arrows": "to", "from": 1841, "to": 260}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

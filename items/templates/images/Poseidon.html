@@ -1,0 +1,250 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 600px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 4, "label": "Earth (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 44, "label": "Atlantis (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2, "label": "Fire (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6, "label": "Volcano (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1, "label": "Water (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 18, "label": "Tsunami (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3, "label": "Wind (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5, "label": "Tornado (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8, "label": "Dust (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 22, "label": "Sand (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7, "label": "Lake (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 66, "label": "Sea (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 14, "label": "Lava (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 10, "label": "Mountain (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 9, "label": "Plant (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 30, "label": "Seaweed (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 11, "label": "Smoke (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 12, "label": "Steam (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 497, "label": "Steamboat (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 13, "label": "Wave (2)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 23, "label": "Ash (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 63, "label": "Phoenix (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 36, "label": "Avalanche (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 31, "label": "Cloud (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 54, "label": "Rain (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 28, "label": "Engine (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 103, "label": "Submarine (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 40, "label": "Eruption (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 35, "label": "Fjord (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 47, "label": "Mermaid (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 32, "label": "Hurricane (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 38, "label": "Incense (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 42, "label": "Mountain Range (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 24, "label": "Mud (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 17, "label": "Swamp (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 16, "label": "Ocean (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 46, "label": "Fish (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 15, "label": "Planet (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 34, "label": "Sandstorm (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 21, "label": "Stone (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 53, "label": "Statue (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 20, "label": "Storm (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 39, "label": "Surf (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 107, "label": "Surfing (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 320, "label": "Loch Ness Monster (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 19, "label": "Tree (3)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 562, "label": "Trident (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 56, "label": "Titanic (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 125, "label": "Angel (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 57, "label": "Beach (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 360, "label": "Boat (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 167, "label": "Ship (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 43, "label": "Dragon (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 296, "label": "Leviathan (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 490, "label": "Dust Bunny (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 118, "label": "Dust Devil (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 83, "label": "Earthquake (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 129, "label": "Genie (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 340, "label": "Geyser (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 105, "label": "Geysir (4)", "shape": "ellipse"}, {"color": "goldenrod", "id": 74, "label": "Lightning (4)", "shape": "ellipse"}, {"color": "goldenrod", "id": 269, "label": "Zeus (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 145, "label": "Ariel (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 45, "label": "Moon (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 162, "label": "Tide (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 147, "label": "Nymph (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 73, "label": "Obsidian (4)", "shape": "ellipse"}, {"color": "goldenrod", "id": 120, "label": "Poseidon (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 310, "label": "Triton (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 149, "label": "Flood (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 51, "label": "Rock (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 58, "label": "Salt (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 443, "label": "Captain (5)", "shape": "ellipse"}, {"color": "#6c757d", "id": 260, "label": "[not] (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 48, "label": "Sushi (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 150, "label": "Sashimi (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 146, "label": "Venus (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 472, "label": "Aphrodite (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 93, "label": "Whale (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 65, "label": "Wine (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2716, "label": "Dionysus (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 141, "label": "Wood (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 224, "label": "Algae (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 204, "label": "Archipelago (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 264, "label": "Pirate (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 178, "label": "Coral Reef (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1973, "label": "Electricity (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 198, "label": "Flying Fish (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 681, "label": "Fountain (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 209, "label": "Hot Spring (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 133, "label": "Jupiter (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 270, "label": "Kraken (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 491, "label": "Sea Monster (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 695, "label": "Naiad (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 180, "label": "Narwhal (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 266, "label": "Unicorn (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 142, "label": "Night (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 692, "label": "Olympus (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 203, "label": "Onyx (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 343, "label": "Sea Dragon (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 246, "label": "Surf and Turf (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 188, "label": "Temple (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 465, "label": "Thor (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 207, "label": "Tidal Wave (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 451, "label": "Titan (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 459, "label": "Neptune (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 289, "label": "Vase (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3014, "label": "Amphora (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 245, "label": "Water Lily (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 511, "label": "Aquaman (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 284, "label": "Egg (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5229, "label": "Electric Fish (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 290, "label": "Fisherman (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1869, "label": "Goblin King (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 427, "label": "God (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 631, "label": "Hades (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 484, "label": "Hercules (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1430, "label": "Holy Lake (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 457, "label": "Honeymoon (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1633, "label": "Horse (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2720, "label": "Seahorse (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 425, "label": "King (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5187, "label": "Krakken (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 319, "label": "Moses (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1920, "label": "Parting (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 943, "label": "Mount Olympus (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1898, "label": "Paper Boat (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 736, "label": "Poseidon\u2019s Trident (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 420, "label": "Rainy (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 738, "label": "Rhea (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1583, "label": "Tuxedo (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 272, "label": "Universe (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1990, "label": "Chariot (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 865, "label": "Crane (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4989, "label": "Heron (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 841, "label": "Nen Hithoel (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1550, "label": "Sea Horse (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1104, "label": "Anduin (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4658, "label": "Anduin Lothar (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1070, "label": "Athena (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1304, "label": "Legendary (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1409, "label": "Narnia (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1542, "label": "Aslan (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 985, "label": "Osiris (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1194, "label": "Isis (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3395, "label": "Seadragon (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2355, "label": "Spear (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1673, "label": "Ancestor (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1553, "label": "Caspian (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3981, "label": "Google (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5128, "label": "Google Ocean (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2350, "label": "Grandpa (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3334, "label": "Lifeguard (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1702, "label": "Model (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1167, "label": "Uncle (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3982, "label": "Googleplex (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5499, "label": "Mediterranean (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6627, "label": "Bartholomew (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4774, "label": "Eye of Ra (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6628, "label": "Po-seidon (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6630, "label": "Programmer (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3520, "label": "Pail (16)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 4, "to": 44}, {"arrows": "to", "from": 2, "to": 6}, {"arrows": "to", "from": 1, "to": 18}, {"arrows": "to", "from": 3, "to": 5}, {"arrows": "to", "from": 8, "to": 22}, {"arrows": "to", "from": 7, "to": 66}, {"arrows": "to", "from": 14, "to": 6}, {"arrows": "to", "from": 10, "to": 44}, {"arrows": "to", "from": 9, "to": 30}, {"arrows": "to", "from": 11, "to": 6}, {"arrows": "to", "from": 12, "to": 497}, {"arrows": "to", "from": 5, "to": 18}, {"arrows": "to", "from": 6, "to": 44}, {"arrows": "to", "from": 13, "to": 18}, {"arrows": "to", "from": 23, "to": 63}, {"arrows": "to", "from": 36, "to": 18}, {"arrows": "to", "from": 31, "to": 54}, {"arrows": "to", "from": 28, "to": 103}, {"arrows": "to", "from": 40, "to": 44}, {"arrows": "to", "from": 35, "to": 47}, {"arrows": "to", "from": 32, "to": 18}, {"arrows": "to", "from": 38, "to": 11}, {"arrows": "to", "from": 42, "to": 44}, {"arrows": "to", "from": 24, "to": 17}, {"arrows": "to", "from": 16, "to": 46}, {"arrows": "to", "from": 15, "to": 4}, {"arrows": "to", "from": 22, "to": 44}, {"arrows": "to", "from": 34, "to": 18}, {"arrows": "to", "from": 30, "to": 47}, {"arrows": "to", "from": 21, "to": 53}, {"arrows": "to", "from": 20, "to": 18}, {"arrows": "to", "from": 39, "to": 107}, {"arrows": "to", "from": 17, "to": 320}, {"arrows": "to", "from": 19, "to": 562}, {"arrows": "to", "from": 18, "to": 56}, {"arrows": "to", "from": 125, "to": 47}, {"arrows": "to", "from": 44, "to": 47}, {"arrows": "to", "from": 57, "to": 47}, {"arrows": "to", "from": 360, "to": 167}, {"arrows": "to", "from": 43, "to": 296}, {"arrows": "to", "from": 490, "to": 490}, {"arrows": "to", "from": 118, "to": 5}, {"arrows": "to", "from": 83, "to": 18}, {"arrows": "to", "from": 46, "to": 47}, {"arrows": "to", "from": 129, "to": 47}, {"arrows": "to", "from": 340, "to": 16}, {"arrows": "to", "from": 105, "to": 16}, {"arrows": "to", "from": 74, "to": 269}, {"arrows": "to", "from": 47, "to": 145}, {"arrows": "to", "from": 45, "to": 162}, {"arrows": "to", "from": 147, "to": 47}, {"arrows": "to", "from": 73, "to": 562}, {"arrows": "to", "from": 63, "to": 2}, {"arrows": "to", "from": 120, "to": 310}, {"arrows": "to", "from": 54, "to": 149}, {"arrows": "to", "from": 51, "to": 44}, {"arrows": "to", "from": 58, "to": 16}, {"arrows": "to", "from": 66, "to": 47}, {"arrows": "to", "from": 167, "to": 56}, {"arrows": "to", "from": 53, "to": 47}, {"arrows": "to", "from": 497, "to": 443}, {"arrows": "to", "from": 103, "to": 44}, {"arrows": "to", "from": 107, "to": 260}, {"arrows": "to", "from": 48, "to": 150}, {"arrows": "to", "from": 56, "to": 44}, {"arrows": "to", "from": 146, "to": 472}, {"arrows": "to", "from": 93, "to": 310}, {"arrows": "to", "from": 65, "to": 2716}, {"arrows": "to", "from": 141, "to": 360}, {"arrows": "to", "from": 224, "to": 30}, {"arrows": "to", "from": 472, "to": 47}, {"arrows": "to", "from": 204, "to": 44}, {"arrows": "to", "from": 145, "to": 47}, {"arrows": "to", "from": 443, "to": 264}, {"arrows": "to", "from": 178, "to": 44}, {"arrows": "to", "from": 2716, "to": 65}, {"arrows": "to", "from": 1973, "to": 74}, {"arrows": "to", "from": 149, "to": 18}, {"arrows": "to", "from": 198, "to": 47}, {"arrows": "to", "from": 681, "to": 1}, {"arrows": "to", "from": 209, "to": 47}, {"arrows": "to", "from": 133, "to": 269}, {"arrows": "to", "from": 296, "to": 270}, {"arrows": "to", "from": 320, "to": 491}, {"arrows": "to", "from": 695, "to": 47}, {"arrows": "to", "from": 180, "to": 266}, {"arrows": "to", "from": 142, "to": 310}, {"arrows": "to", "from": 692, "to": 269}, {"arrows": "to", "from": 203, "to": 562}, {"arrows": "to", "from": 264, "to": 443}, {"arrows": "to", "from": 150, "to": 48}, {"arrows": "to", "from": 343, "to": 310}, {"arrows": "to", "from": 491, "to": 270}, {"arrows": "to", "from": 246, "to": 269}, {"arrows": "to", "from": 188, "to": 44}, {"arrows": "to", "from": 465, "to": 269}, {"arrows": "to", "from": 207, "to": 18}, {"arrows": "to", "from": 162, "to": 18}, {"arrows": "to", "from": 451, "to": 44}, {"arrows": "to", "from": 562, "to": 459}, {"arrows": "to", "from": 310, "to": 47}, {"arrows": "to", "from": 266, "to": 180}, {"arrows": "to", "from": 289, "to": 3014}, {"arrows": "to", "from": 245, "to": 147}, {"arrows": "to", "from": 269, "to": 562}, {"arrows": "to", "from": 3014, "to": 65}, {"arrows": "to", "from": 511, "to": 562}, {"arrows": "to", "from": 284, "to": 46}, {"arrows": "to", "from": 5229, "to": 1973}, {"arrows": "to", "from": 290, "to": 46}, {"arrows": "to", "from": 1869, "to": 1869}, {"arrows": "to", "from": 427, "to": 269}, {"arrows": "to", "from": 631, "to": 269}, {"arrows": "to", "from": 484, "to": 44}, {"arrows": "to", "from": 1430, "to": 44}, {"arrows": "to", "from": 457, "to": 47}, {"arrows": "to", "from": 1633, "to": 2720}, {"arrows": "to", "from": 425, "to": 44}, {"arrows": "to", "from": 270, "to": 310}, {"arrows": "to", "from": 5187, "to": 451}, {"arrows": "to", "from": 319, "to": 1920}, {"arrows": "to", "from": 943, "to": 269}, {"arrows": "to", "from": 459, "to": 562}, {"arrows": "to", "from": 1898, "to": 1898}, {"arrows": "to", "from": 736, "to": 18}, {"arrows": "to", "from": 420, "to": 260}, {"arrows": "to", "from": 738, "to": 269}, {"arrows": "to", "from": 1583, "to": 459}, {"arrows": "to", "from": 272, "to": 4}, {"arrows": "to", "from": 1990, "to": 44}, {"arrows": "to", "from": 865, "to": 4989}, {"arrows": "to", "from": 841, "to": 841}, {"arrows": "to", "from": 1920, "to": 66}, {"arrows": "to", "from": 2720, "to": 1550}, {"arrows": "to", "from": 1104, "to": 4658}, {"arrows": "to", "from": 1070, "to": 1633}, {"arrows": "to", "from": 4989, "to": 865}, {"arrows": "to", "from": 1304, "to": 270}, {"arrows": "to", "from": 1409, "to": 1542}, {"arrows": "to", "from": 985, "to": 1194}, {"arrows": "to", "from": 1550, "to": 2720}, {"arrows": "to", "from": 3395, "to": 310}, {"arrows": "to", "from": 2355, "to": 562}, {"arrows": "to", "from": 1673, "to": 310}, {"arrows": "to", "from": 4658, "to": 260}, {"arrows": "to", "from": 1542, "to": 1409}, {"arrows": "to", "from": 1553, "to": 1409}, {"arrows": "to", "from": 3981, "to": 5128}, {"arrows": "to", "from": 2350, "to": 310}, {"arrows": "to", "from": 1194, "to": 985}, {"arrows": "to", "from": 3334, "to": 47}, {"arrows": "to", "from": 1702, "to": 47}, {"arrows": "to", "from": 1167, "to": 459}, {"arrows": "to", "from": 5128, "to": 260}, {"arrows": "to", "from": 3982, "to": 3981}, {"arrows": "to", "from": 5499, "to": 44}, {"arrows": "to", "from": 6627, "to": 260}, {"arrows": "to", "from": 4774, "to": 562}, {"arrows": "to", "from": 6628, "to": 120}, {"arrows": "to", "from": 6630, "to": 459}, {"arrows": "to", "from": 3520, "to": 47}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

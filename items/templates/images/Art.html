@@ -1,0 +1,250 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 600px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 4, "label": "Earth (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 148, "label": "Pottery (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2, "label": "Fire (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 503, "label": "Painting (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1, "label": "Water (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3113, "label": "Paint (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 101, "label": "Pencil (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 355, "label": "Drawing (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 58, "label": "Salt (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5039, "label": "Sculpture (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 53, "label": "Statue (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 250, "label": "Adobe (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4710, "label": "Photoshop (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 227, "label": "Crayon (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 325, "label": "David (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 611, "label": "Michelangelo (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 262, "label": "Love (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 460, "label": "Heart (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 126, "label": "Money (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4448, "label": "Prostitute (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 154, "label": "Paper (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 704, "label": "Origami (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 289, "label": "Vase (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 136, "label": "Wall (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2627, "label": "Graffiti (7)", "shape": "ellipse"}, {"color": "goldenrod", "id": 432, "label": "Art (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 705, "label": "Masterpiece (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 384, "label": "Colored Pencil (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1155, "label": "Elf (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1119, "label": "Fireplace (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 271, "label": "Gold (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 543, "label": "Midas (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5358, "label": "Ink (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5359, "label": "Tattoo (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 685, "label": "Artist (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 584, "label": "Passion (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 505, "label": "Pop (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5552, "label": "Culture (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 450, "label": "Tile (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 646, "label": "Mosaic (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 625, "label": "War (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5040, "label": "Art of War (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 806, "label": "Battle (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 651, "label": "Creation (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1100, "label": "Enemy (7)", "shape": "ellipse"}, {"color": "goldenrod", "id": 9404, "label": "Artillery (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 433, "label": "Freedom (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5835, "label": "Expression (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2628, "label": "Banksy (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 513, "label": "Kingdom (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4415, "label": "Renaissance (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 650, "label": "Knight (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 812, "label": "Joker (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3204, "label": "Landscape (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2984, "label": "Mona Lisa (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 775, "label": "Smile (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3112, "label": "Painter (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 429, "label": "Queen (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5360, "label": "Tattoo Artist (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 925, "label": "Chess (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1034, "label": "Checkmate (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 968, "label": "Empire (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 785, "label": "Fake (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3152, "label": "Forgery (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1069, "label": "Fight (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1574, "label": "France (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5504, "label": "Louvre (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1095, "label": "Picasso (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1313, "label": "Judge (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1480, "label": "Lawyer (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2618, "label": "Copyright (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2983, "label": "Leonardo Da Vinci (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8257, "label": "Marker (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2068, "label": "Oscar (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3114, "label": "Paint Bucket (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2938, "label": "Pen (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2332, "label": "Poet (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 853, "label": "Taj Mahal (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4735, "label": "Warhol (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4416, "label": "Baroque (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3146, "label": "Emotion (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4420, "label": "Jackson Pollock (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4422, "label": "Splatter (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1310, "label": "Master (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2009, "label": "Monopoly (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1817, "label": "Museum (9)", "shape": "ellipse"}, {"color": "#6c757d", "id": 260, "label": "[not] (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1253, "label": "Cubism (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2623, "label": "Picture (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 962, "label": "Real (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2809, "label": "Reality (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3107, "label": "Artificial (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1874, "label": "Trial (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5982, "label": "Venus de Milo (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2610, "label": "Antique (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1838, "label": "Art Museum (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2334, "label": "Artifact (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3109, "label": "Artificial Intelligence (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1843, "label": "Car Crash (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1507, "label": "Cartoon (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1601, "label": "Animation (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3035, "label": "Collector (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2624, "label": "Frame (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4426, "label": "Gold Paint (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6259, "label": "Leonardo (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4424, "label": "Monet (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5265, "label": "Piece (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5551, "label": "Rembrandt (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4437, "label": "Jackson (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1255, "label": "Stalemate (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1377, "label": "Draw (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3116, "label": "Artificial Art (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1376, "label": "Chessboard (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4427, "label": "Goldman Sachs (11)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4438, "label": "Michael (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6372, "label": "Dull (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3150, "label": "Inspiration (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3555, "label": "Receipt (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4001, "label": "Fascination (15)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2205, "label": "Hobby (15)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2980, "label": "Skill (15)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3103, "label": "Craft (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3104, "label": "Artcraft (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4006, "label": "Muse (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2981, "label": "Talent (16)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1798, "label": "Diorama (17)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 7389, "label": "Artcard (18)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2349, "label": "Exhibit (18)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2343, "label": "Sindar (18)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1850, "label": "Wax Museum (18)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1856, "label": "Wax Statue (19)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 4, "to": 148}, {"arrows": "to", "from": 2, "to": 503}, {"arrows": "to", "from": 1, "to": 3113}, {"arrows": "to", "from": 101, "to": 355}, {"arrows": "to", "from": 58, "to": 5039}, {"arrows": "to", "from": 53, "to": 5039}, {"arrows": "to", "from": 250, "to": 4710}, {"arrows": "to", "from": 227, "to": 355}, {"arrows": "to", "from": 325, "to": 611}, {"arrows": "to", "from": 262, "to": 460}, {"arrows": "to", "from": 126, "to": 4448}, {"arrows": "to", "from": 154, "to": 704}, {"arrows": "to", "from": 148, "to": 289}, {"arrows": "to", "from": 289, "to": 148}, {"arrows": "to", "from": 136, "to": 2627}, {"arrows": "to", "from": 432, "to": 705}, {"arrows": "to", "from": 384, "to": 503}, {"arrows": "to", "from": 355, "to": 503}, {"arrows": "to", "from": 1155, "to": 503}, {"arrows": "to", "from": 1119, "to": 503}, {"arrows": "to", "from": 271, "to": 543}, {"arrows": "to", "from": 460, "to": 262}, {"arrows": "to", "from": 5358, "to": 5359}, {"arrows": "to", "from": 611, "to": 325}, {"arrows": "to", "from": 704, "to": 154}, {"arrows": "to", "from": 503, "to": 685}, {"arrows": "to", "from": 584, "to": 262}, {"arrows": "to", "from": 505, "to": 5552}, {"arrows": "to", "from": 450, "to": 646}, {"arrows": "to", "from": 625, "to": 5040}, {"arrows": "to", "from": 5040, "to": 5040}, {"arrows": "to", "from": 685, "to": 705}, {"arrows": "to", "from": 806, "to": 625}, {"arrows": "to", "from": 651, "to": 685}, {"arrows": "to", "from": 5552, "to": 685}, {"arrows": "to", "from": 1100, "to": 9404}, {"arrows": "to", "from": 433, "to": 5835}, {"arrows": "to", "from": 2627, "to": 2628}, {"arrows": "to", "from": 513, "to": 4415}, {"arrows": "to", "from": 650, "to": 812}, {"arrows": "to", "from": 3204, "to": 503}, {"arrows": "to", "from": 705, "to": 685}, {"arrows": "to", "from": 543, "to": 271}, {"arrows": "to", "from": 2984, "to": 775}, {"arrows": "to", "from": 646, "to": 450}, {"arrows": "to", "from": 3113, "to": 3112}, {"arrows": "to", "from": 4710, "to": 432}, {"arrows": "to", "from": 4448, "to": 503}, {"arrows": "to", "from": 429, "to": 2984}, {"arrows": "to", "from": 5039, "to": 53}, {"arrows": "to", "from": 775, "to": 2984}, {"arrows": "to", "from": 5359, "to": 5360}, {"arrows": "to", "from": 9404, "to": 9404}, {"arrows": "to", "from": 2628, "to": 2627}, {"arrows": "to", "from": 925, "to": 1034}, {"arrows": "to", "from": 968, "to": 4415}, {"arrows": "to", "from": 5835, "to": 685}, {"arrows": "to", "from": 785, "to": 3152}, {"arrows": "to", "from": 1069, "to": 625}, {"arrows": "to", "from": 3152, "to": 785}, {"arrows": "to", "from": 1574, "to": 5504}, {"arrows": "to", "from": 812, "to": 1095}, {"arrows": "to", "from": 1313, "to": 1480}, {"arrows": "to", "from": 1480, "to": 2618}, {"arrows": "to", "from": 2983, "to": 2984}, {"arrows": "to", "from": 5504, "to": 2984}, {"arrows": "to", "from": 8257, "to": 2627}, {"arrows": "to", "from": 2068, "to": 1095}, {"arrows": "to", "from": 3114, "to": 3113}, {"arrows": "to", "from": 3112, "to": 503}, {"arrows": "to", "from": 2938, "to": 3113}, {"arrows": "to", "from": 2332, "to": 685}, {"arrows": "to", "from": 4415, "to": 611}, {"arrows": "to", "from": 853, "to": 262}, {"arrows": "to", "from": 5360, "to": 5359}, {"arrows": "to", "from": 4735, "to": 505}, {"arrows": "to", "from": 4416, "to": 503}, {"arrows": "to", "from": 1034, "to": 925}, {"arrows": "to", "from": 2618, "to": 685}, {"arrows": "to", "from": 3146, "to": 503}, {"arrows": "to", "from": 4420, "to": 4422}, {"arrows": "to", "from": 1310, "to": 685}, {"arrows": "to", "from": 2009, "to": 2009}, {"arrows": "to", "from": 1817, "to": 260}, {"arrows": "to", "from": 1095, "to": 1253}, {"arrows": "to", "from": 2623, "to": 503}, {"arrows": "to", "from": 962, "to": 2809}, {"arrows": "to", "from": 2809, "to": 3107}, {"arrows": "to", "from": 1874, "to": 685}, {"arrows": "to", "from": 5982, "to": 685}, {"arrows": "to", "from": 2610, "to": 503}, {"arrows": "to", "from": 1838, "to": 1838}, {"arrows": "to", "from": 2334, "to": 2334}, {"arrows": "to", "from": 3107, "to": 3109}, {"arrows": "to", "from": 1843, "to": 2628}, {"arrows": "to", "from": 1507, "to": 1601}, {"arrows": "to", "from": 3035, "to": 685}, {"arrows": "to", "from": 1253, "to": 1095}, {"arrows": "to", "from": 2624, "to": 503}, {"arrows": "to", "from": 4426, "to": 271}, {"arrows": "to", "from": 6259, "to": 2984}, {"arrows": "to", "from": 4424, "to": 126}, {"arrows": "to", "from": 5265, "to": 705}, {"arrows": "to", "from": 5551, "to": 503}, {"arrows": "to", "from": 4422, "to": 4437}, {"arrows": "to", "from": 1255, "to": 1377}, {"arrows": "to", "from": 1601, "to": 1507}, {"arrows": "to", "from": 3109, "to": 3116}, {"arrows": "to", "from": 1376, "to": 1034}, {"arrows": "to", "from": 1377, "to": 503}, {"arrows": "to", "from": 4427, "to": 685}, {"arrows": "to", "from": 4437, "to": 4438}, {"arrows": "to", "from": 3116, "to": 3109}, {"arrows": "to", "from": 6372, "to": 685}, {"arrows": "to", "from": 3150, "to": 685}, {"arrows": "to", "from": 4438, "to": 4437}, {"arrows": "to", "from": 3555, "to": 685}, {"arrows": "to", "from": 4001, "to": 685}, {"arrows": "to", "from": 2205, "to": 503}, {"arrows": "to", "from": 2980, "to": 3103}, {"arrows": "to", "from": 3103, "to": 3104}, {"arrows": "to", "from": 4006, "to": 685}, {"arrows": "to", "from": 2981, "to": 705}, {"arrows": "to", "from": 3104, "to": 3104}, {"arrows": "to", "from": 1798, "to": 1817}, {"arrows": "to", "from": 7389, "to": 7389}, {"arrows": "to", "from": 2349, "to": 1817}, {"arrows": "to", "from": 2343, "to": 1155}, {"arrows": "to", "from": 1850, "to": 1856}, {"arrows": "to", "from": 1856, "to": 1850}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

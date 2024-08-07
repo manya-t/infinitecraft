@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 122, "label": "House (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 796, "label": "Home (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 265, "label": "Prince (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2252, "label": "Prince Charming (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 136, "label": "Wall (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 833, "label": "Room (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 268, "label": "Princess (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1409, "label": "Narnia (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1309, "label": "Wardrobe (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1186, "label": "Closet (10)", "shape": "ellipse"}, {"color": "goldenrod", "id": 814, "label": "Thanksgiving (8)", "shape": "ellipse"}, {"color": "goldenrod", "id": 984, "label": "Turkey (9)", "shape": "ellipse"}, {"color": "goldenrod", "id": 988, "label": "Door (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1238, "label": "Double Door (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 991, "label": "Revolution (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 6172, "label": "Revolving Door (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3601, "label": "Alarm (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3755, "label": "Burglar (14)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1477, "label": "Thief (8)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 122, "to": 796}, {"arrows": "to", "from": 265, "to": 2252}, {"arrows": "to", "from": 136, "to": 833}, {"arrows": "to", "from": 796, "to": 122}, {"arrows": "to", "from": 268, "to": 265}, {"arrows": "to", "from": 2252, "to": 268}, {"arrows": "to", "from": 1409, "to": 1309}, {"arrows": "to", "from": 833, "to": 1186}, {"arrows": "to", "from": 814, "to": 984}, {"arrows": "to", "from": 988, "to": 1238}, {"arrows": "to", "from": 991, "to": 6172}, {"arrows": "to", "from": 984, "to": 814}, {"arrows": "to", "from": 1186, "to": 1309}, {"arrows": "to", "from": 1238, "to": 988}, {"arrows": "to", "from": 1309, "to": 1409}, {"arrows": "to", "from": 3601, "to": 3755}, {"arrows": "to", "from": 3755, "to": 1477}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

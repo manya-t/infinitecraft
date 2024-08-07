@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#B2C9AB", "id": 1, "label": "Water (1)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 197, "label": "Wet (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 38, "label": "Incense (3)", "shape": "ellipse"}, {"color": "goldenrod", "id": 275, "label": "Wedding (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 47, "label": "Mermaid (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 145, "label": "Ariel (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 434, "label": "River (4)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8197, "label": "Carnation (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 124, "label": "Dinosaur (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 267, "label": "Monster (5)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 508, "label": "Bridezilla (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 329, "label": "Amazon (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 4935, "label": "Bling (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 332, "label": "Bouquet (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 302, "label": "Crab (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 286, "label": "Frankenstein (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 436, "label": "Marriage (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 647, "label": "Wife (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 268, "label": "Princess (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 429, "label": "Queen (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1583, "label": "Tuxedo (6)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 625, "label": "War (6)", "shape": "ellipse"}, {"color": "goldenrod", "id": 444, "label": "Bride (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 452, "label": "Cancer (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 633, "label": "Child (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 627, "label": "Family (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 626, "label": "Divorce (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 902, "label": "Ex-Wife (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 2469, "label": "Groom (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 746, "label": "Nose Ring (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5711, "label": "Purity (7)", "shape": "ellipse"}, {"color": "goldenrod", "id": 9679, "label": "Virgin (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 439, "label": "Religion (7)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3498, "label": "Loneliness (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8541, "label": "Widow (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5848, "label": "Receptionist (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 5360, "label": "Tattoo Artist (8)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 9493, "label": "Tattooed Bride (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1549, "label": "Mother-in-law (9)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1619, "label": "Monster-in-law (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3005, "label": "Daughter-in-law (10)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1580, "label": "Cloth (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1645, "label": "Tailor (12)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1720, "label": "Dress (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 3819, "label": "Silk (13)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1753, "label": "Fiat (14)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 1755, "label": "Wedding Dress (14)", "shape": "ellipse"}, {"color": "#B2C9AB", "id": 8122, "label": "Sewing Kit (15)", "shape": "ellipse"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": 1, "to": 197}, {"arrows": "to", "from": 38, "to": 275}, {"arrows": "to", "from": 47, "to": 145}, {"arrows": "to", "from": 434, "to": 275}, {"arrows": "to", "from": 145, "to": 47}, {"arrows": "to", "from": 8197, "to": 275}, {"arrows": "to", "from": 124, "to": 275}, {"arrows": "to", "from": 267, "to": 508}, {"arrows": "to", "from": 197, "to": 275}, {"arrows": "to", "from": 329, "to": 275}, {"arrows": "to", "from": 4935, "to": 275}, {"arrows": "to", "from": 332, "to": 275}, {"arrows": "to", "from": 302, "to": 47}, {"arrows": "to", "from": 286, "to": 267}, {"arrows": "to", "from": 436, "to": 647}, {"arrows": "to", "from": 268, "to": 429}, {"arrows": "to", "from": 1583, "to": 275}, {"arrows": "to", "from": 625, "to": 268}, {"arrows": "to", "from": 275, "to": 436}, {"arrows": "to", "from": 444, "to": 275}, {"arrows": "to", "from": 508, "to": 275}, {"arrows": "to", "from": 452, "to": 302}, {"arrows": "to", "from": 633, "to": 627}, {"arrows": "to", "from": 626, "to": 902}, {"arrows": "to", "from": 627, "to": 275}, {"arrows": "to", "from": 2469, "to": 275}, {"arrows": "to", "from": 746, "to": 275}, {"arrows": "to", "from": 5711, "to": 9679}, {"arrows": "to", "from": 429, "to": 275}, {"arrows": "to", "from": 439, "to": 275}, {"arrows": "to", "from": 902, "to": 625}, {"arrows": "to", "from": 3498, "to": 8541}, {"arrows": "to", "from": 5848, "to": 275}, {"arrows": "to", "from": 5360, "to": 9493}, {"arrows": "to", "from": 9679, "to": 275}, {"arrows": "to", "from": 647, "to": 436}, {"arrows": "to", "from": 1549, "to": 1619}, {"arrows": "to", "from": 9493, "to": 9493}, {"arrows": "to", "from": 8541, "to": 275}, {"arrows": "to", "from": 3005, "to": 1549}, {"arrows": "to", "from": 1619, "to": 626}, {"arrows": "to", "from": 1580, "to": 275}, {"arrows": "to", "from": 1645, "to": 275}, {"arrows": "to", "from": 1720, "to": 275}, {"arrows": "to", "from": 3819, "to": 275}, {"arrows": "to", "from": 1753, "to": 275}, {"arrows": "to", "from": 1755, "to": 436}, {"arrows": "to", "from": 8122, "to": 1755}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

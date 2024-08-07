@@ -19,9 +19,39 @@
         </div>
         <button type="submit" class="btn btn-primary mb-2" id="submitNew">Submit</button>
     </form>
-    <div class="alert alert-success" role="alert">
-        {{message|safe}}
-      </div>      
+    {% if success is not None %}
+        {% if success%}
+            <div class="alert alert-success" role="alert">
+        {% else %}
+            <div class="alert alert-danger" role="alert">
+        {% endif %}
+        {% if message != "" %}
+                {{message|safe}}<br>
+        {% endif %}
+                {{tr}}
+            </div>
+
+        <div class="alert alert-info" role="alert">
+            {{tr.input_pair.first_input}} makes {{first_most_common.item}} {{first_most_common.freq}} times <br>
+            {{tr.input_pair.second_input}} makes {{second_most_common.item}} {{second_most_common.freq}} times
+        </div>
+
+        <div class="alert alert-info" role="alert">
+            {% for pair in gaps %}
+                {{pair}} &emsp; <small><i>from {{pair.from_AB_C}}</i></small><br>
+            {% endfor %}
+        </div>
+        <h3>{{following}}</h3>
+        
+        <div class="row">
+            <div class="col">
+                {% with 'images/'|add:url_path_name|add:'.html' as path %}
+                    {% include path %}
+                {% endwith %}
+            </div>
+        </div>        
+    {% endif %}
+
     <table class="table table-striped table-hover table-sm">
         <thead style="position: sticky;top:0">
             <tr class="table-primary">
@@ -34,29 +64,52 @@
         <tbody>
             {% for tr in page %}
                 <tr>
-                    {% if tr.first_input.isReal %}
+                    {% if tr.input_pair.first_input.isReal %}
                         <td>
                     {% else %}
                         <td class="table-secondary">
                     {% endif %}
-                        <a href="{% url 'item' tr.first_input.id  %}">{{tr.first_input.name}} ({{tr.first_input.tier}})</a></td>
+                        <button class="btn btn-light" onclick="navigator.clipboard.writeText('{{tr.input_pair.first_input.name}}')">🗐</button>
+                        <a href="{% url 'item' tr.input_pair.first_input.id  %}">{{tr.input_pair.first_input.name}} ({{tr.input_pair.first_input.tier}})</a>
+                        </td>
 
-                    {% if tr.second_input.isReal %}
+                    {% if tr.input_pair.second_input.isReal %}
                         <td>
                     {% else %}
                         <td class="table-secondary">
                     {% endif %}
-                        <a href="{% url 'item' tr.second_input.id  %}">{{tr.second_input.name}} ({{tr.second_input.tier}})</a></td>
+                        <button class="btn btn-light" onclick="navigator.clipboard.writeText('{{tr.input_pair.second_input.name}}')">🗐</button>
+                        <a href="{% url 'item' tr.input_pair.second_input.id  %}">{{tr.input_pair.second_input.name}} ({{tr.input_pair.second_input.tier}})</a>
+                        </td>
 
                     {% if tr.output.isReal %}
                         <td>
                     {% else %}
                         <td class="table-secondary">
                     {% endif %}
-                        <a href="{% url 'item' tr.output.id  %}">{{tr.output.name}} ({{tr.output.tier}})</a></td>
+                        <button class="btn btn-light" onclick="navigator.clipboard.writeText('{{tr.output.name}}')">🗐</button>
+                        <a href="{% url 'item' tr.output.id  %}">{{tr.output.name}} ({{tr.output.tier}})</a>
+                        </td>
                         <td>{{tr.timeUpdated|date:"M j, g:i a"}}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+    <div class="pagination">
+        <span class="step-links">
+            {% if page.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page.previous_page_number }}">previous</a>
+            {% endif %}
+    
+            <span class="current">
+                Page {{ page.number }} of {{ page.paginator.num_pages }}.
+            </span>
+    
+            {% if page.has_next %}
+                <a href="?page={{ page.next_page_number }}">next</a>
+                <a href="?page={{ page.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
 {% endblock %}
