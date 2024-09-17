@@ -41,6 +41,14 @@ def index(request):
             
         following.chainGraph(highlight=True)
         gaps = following.gaps()
+        gaps_continuing = []
+        other_gaps = []
+        for gap in gaps:
+            if gap.following() == following or (gap.following() is None and gap.second_input == following):
+                gaps_continuing.append(gap)
+            else:
+                other_gaps.append(gap)        
+
         url_path_name = following.name_wo_special_char()
     
         return render(request, "index.html", {
@@ -48,7 +56,8 @@ def index(request):
             "message" : message,
             "tr": tr,
             "success": result["success"],
-            "gaps": gaps,
+            "gaps_continuing": gaps_continuing,
+            "other_gaps": other_gaps,
             "first_most_common": first_most_common,
             "second_most_common": second_most_common,
             "following": following,

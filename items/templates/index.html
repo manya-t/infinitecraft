@@ -37,7 +37,11 @@
         </div>
 
         <div class="alert alert-info" role="alert">
-            {% for pair in gaps %}
+            {% for pair in gaps_continuing %}
+                {{pair}} &emsp; <small><i>from {{pair.from_AB_C}}</i></small><br>
+            {% endfor %}
+            <br>
+            {% for pair in other_gaps %}
                 {{pair}} &emsp; <small><i>from {{pair.from_AB_C}}</i></small><br>
             {% endfor %}
         </div>
