@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 from django.db.models import F
 from django.db import IntegrityError
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 from .models import Item, InputDoesNotExist, Transformation, ItemPair, PyvisConstants
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 import json
@@ -111,12 +111,37 @@ def gaps(request):
         {"pair": median_gap, "name": "Median Gap"},
         {"pair": random_gap, "name": "Random Gap"}
     ]
+    
     times = []
+    now = datetime.now(timezone.utc)
     for gap in gaps:
         try:
-            times.append(gap["pair"].from_AB_C.timeCreated)
+            gapTime = gap["pair"].from_AB_C.timeCreated
         except:
-            times.append(datetime(1,1,1,tzinfo=pytz.UTC))
+            gapTime = datetime(1,1,1,tzinfo=pytz.UTC)
+        times.append(gapTime)
+
+        delta = now - gapTime
+        if delta.days == 0:
+            if delta.seconds < 60:
+                gap['timeInterval'] = f'{delta.seconds} seconds'
+            else:
+                minutes = round(delta.seconds/60)
+                if minutes < 60:
+                    gap['timeInterval'] = f'{minutes} minutes'
+                else:
+                    hours = round(minutes/60)
+                    gap['timeInterval'] = f'{hours} hours'
+        elif delta.days < 7:
+            gap['timeInterval'] = f'{delta.days} days'
+        elif delta.days < 30:
+            weeks = round(delta.days/7)
+            gap['timeInterval'] = f'{weeks} weeks'
+        else:
+            months = round(delta.days/30)
+            gap['timeInterval'] = f'{months} months'
+
+        gap['following'] = gap['pair'].following()
 
     for i in range(len(times)):
         gap = gaps[i]
@@ -124,7 +149,6 @@ def gaps(request):
             gap['flag'] = 'earliest'
         if times[i] == max(times):
             gap['flag'] = 'latest'
-        gap['following'] = gap['pair'].following()
 
     return render(request, "gaps.html", {
         "gaps": gaps,
