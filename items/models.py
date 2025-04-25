@@ -1,6 +1,10 @@
 from django.db import models
-from django.db.models import Count
+from django.db.models import Count, CharField
+from django.db.models.functions import Length
 from pyvis.network import Network
+from itertools import combinations_with_replacement
+
+CharField.register_lookup(Length, 'length')
 
 class PyvisConstants:
     COLOR_DEFAULT = "#B2C9AB"
@@ -17,7 +21,8 @@ class Item(models.Model):
     simplestWayToMake = models.ForeignKey("items.Transformation", on_delete = models.SET_NULL, related_name = "is_simplest_to_make", null=True)
 
     def __str__(self) -> str:
-        return f"{self.name} ({self.tier})"
+        emoji_string = self.emoji if self.emoji else ""
+        return f"{emoji_string}{self.name} ({self.tier})"
     
     def makes(self):
         as_first = Transformation.objects.filter(input_pair__first_input=self)
@@ -83,9 +88,8 @@ class Item(models.Model):
             simplest = self.simplestWayToMake
             if simplest not in currentResult:
                 currentResult.append(simplest)
-                simplest.input_pair.first_input.recursiveMake(minTier=minTier, currentResult=currentResult)
-                simplest.input_pair.second_input.recursiveMake(minTier=minTier, currentResult=currentResult)
-            currentResult = list(set(currentResult))
+                currentResult = simplest.input_pair.first_input.recursiveMake(minTier=minTier, currentResult=currentResult)
+                currentResult = simplest.input_pair.second_input.recursiveMake(minTier=minTier, currentResult=currentResult)
             return currentResult
 
     def mostCommonOutput(self):
@@ -131,7 +135,28 @@ class Item(models.Model):
         net.save_graph('items/templates/images/' + self.name_wo_special_char() + '.html')
 
     def name_wo_special_char(self):
-        return self.name.replace("?","%3F").replace("/", "%2F")
+        clean_name = self.name.replace("?","%3F").replace("/", "%2F").replace("\\", "%5c")
+        reserved = ["CON", "PRN", "AUX", "NUL", "COM0", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", 
+                    "COM¹", "COM²", "COM³", "LPT0", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9", "LPT¹", 
+                    "LPT²", "LPT³"]
+        if clean_name.upper() in reserved:
+            clean_name = clean_name + "-unreserved"
+        return clean_name
+    
+    def list_by_emoji(item_name):
+        item = Item.fetch(item_name)
+        if item.emoji is None:
+            raise Exception(f"No emoji found for {item}")
+        return list(Item.objects.filter(emoji=item.emoji, isReal=True).order_by("tier","name").all())
+    
+    def no_pair(self):
+        items = Item.objects.filter(isReal=1).order_by("tier","name")
+        for item in items:
+            try:
+                ordered = ItemPair.orderItems([item, self])
+                ItemPair.objects.get(first_input=ordered[0], second_input=ordered[1])
+            except:
+                return item
 
 class InputDoesNotExist(Item.DoesNotExist):
     def __init__(self, name, *args: object) -> None:
@@ -155,28 +180,36 @@ class Transformation(models.Model):
         return f"{self.input_pair.first_input} + {self.input_pair.second_input} = {self.output}"
              
     def updateTier(self):
-        message = ""
+        #message = ""
+        changes = []
+
         # this SHOULD always be the second one, but just in case
         trTier = max(self.input_pair.first_input.tier, self.input_pair.second_input.tier) + 1
         output = self.output
 
         if trTier < output.tier:
-
-            message += f"{output.name} has a new simplest way to make it! <br>Was: {output.simplestWayToMake}<br>"
+            change = {"item_changed": output, 
+                      "old_tier": output.tier,
+                      "old_simplest": output.simplestWayToMake,
+                      "new_tier": trTier,
+                      "new_simplest": self}
+            changes.append(change)
+            #message += f"{output.name} has a new simplest way to make it! <br>Was: {output.simplestWayToMake}<br>"
             
             output.tier = trTier
             output.simplestWayToMake = self
             output.save()
-
-            message +=f"Now: {self}<br>"
+            #message +=f"Now: {self}<br>"
 
             for pair in output.as_first_in_pair.all() | output.as_second_in_pair.all():
                 pair.checkOrder()
-                tr_set = pair.as_inputs.all()
-                if tr_set:
-                    message += tr_set[0].updateTier()
-
-        return message
+                try:
+                    tr = Transformation.objects.get(input_pair=pair)
+                    changes.extend(tr.updateTier())
+                except:
+                    pass
+                    #message += tr_set[0].updateTier()
+        return changes
 
     def export(self):
         return f"{self.second_input}->{self.first_input}->{self.output}"
@@ -271,3 +304,14 @@ class ItemPair(models.Model):
             return self.second_input
         else:
             return None
+        
+    def report_pairs(item_list):
+        results = []
+        for items in combinations_with_replacement(item_list,2):
+            items = ItemPair.orderItems(list(items))
+            try:
+                result = ItemPair.objects.get(first_input=items[0], second_input=items[1])
+            except ItemPair.DoesNotExist:
+                result = f"Pair {items[0]} + {items[1]} does not exist"
+            results.append(result)
+        return results

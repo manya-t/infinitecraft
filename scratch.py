@@ -29,3 +29,14 @@ fetch("https://neal.fun/api/infinite-craft/pair?first=Mountain&second=Earth")
     .then(data => {
         console.log(data);
     });
+
+
+for key in result_dict:
+    ...:     try:
+    ...:         item = Item.fetch(key)
+    ...:         if item.emoji is None:
+    ...:             item.emoji = result_dict[key]
+    ...:             item.save()
+    ...:     except Item.DoesNotExist:
+    ...:         print(f"{key} does not exist")
+    ...:

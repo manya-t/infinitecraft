@@ -16,52 +16,62 @@ def index(request):
     all_tr = Transformation.objects.all().order_by("-timeCreated")
     page_number = request.GET.get("page")
     page = Paginator(all_tr, 50).get_page(page_number)
-    message = ""
+    #message = ""
     if request.method == "POST":
         isReal = ("isNonsense" not in request.POST)
         result = newTransformation(first_input=request.POST["first_input"], 
                           second_input=request.POST["second_input"], 
                           output=request.POST['output'], 
                           isReal=isReal)
-        message = result["message"]
-        tr = result["tr"]
-        returned_message = result["message"]        
-
-        """ if tr.output.isReal:
-            gaps = tr.output.gaps()
+        #message = result["message"]
+        if not result["success"]:
+            return render(request, "index.html", {
+                "success": result["success"],
+                "error":result["error"],
+                "tr": result["tr"],
+                "page":page
+                })
         else:
-            gaps = tr.input_pair.first_input.gaps() | tr.input_pair.second_input.gaps() """
-        
-        first_most_common = tr.input_pair.first_input.mostCommonOutput()
-        second_most_common = tr.input_pair.second_input.mostCommonOutput()
-
-        following = tr.input_pair.following()
-        if following is None:
-            following = tr.input_pair.second_input
+            tr = result["tr"]
             
-        following.chainGraph(highlight=True)
-        gaps = following.gaps()
-        gaps_continuing = []
-        other_gaps = []
-        for gap in gaps:
-            if gap.following() == following or (gap.following() is None and gap.second_input == following):
-                gaps_continuing.append(gap)
-            else:
-                other_gaps.append(gap)        
+            first_most_common = tr.input_pair.first_input.mostCommonOutput()
+            second_most_common = tr.input_pair.second_input.mostCommonOutput()
 
-        url_path_name = following.name_wo_special_char()
-    
-        return render(request, "index.html", {
-            "page" : page,
-            "message" : message,
-            "tr": tr,
-            "success": result["success"],
-            "gaps_continuing": gaps_continuing,
-            "other_gaps": other_gaps,
-            "first_most_common": first_most_common,
-            "second_most_common": second_most_common,
-            "following": following,
-            "url_path_name": url_path_name})
+            following = tr.input_pair.following()
+            if following is None:
+                following = tr.input_pair.second_input
+                
+            following.chainGraph(highlight=True)
+            gaps = following.gaps()
+            gaps_continuing = []
+            other_gaps = []
+            for gap in gaps:
+                if gap.following() == following or (gap.following() is None and gap.second_input == following):
+                    gaps_continuing.append(gap)
+                else:
+                    other_gaps.append(gap)        
+
+            url_path_name = following.name_wo_special_char()
+
+            output_no_pair = tr.output.no_pair()
+            output_gaps = tr.output.gaps()
+            if output_gaps.count()>20:
+                output_gaps = output_gaps[0:10]
+        
+            return render(request, "index.html", {
+                "page" : page,
+                "tr": tr,
+                "success": result["success"],
+                "new_item": result["new_item"],
+                "changes" : result["changes"],
+                "gaps_continuing": gaps_continuing,
+                "other_gaps": other_gaps,
+                "output_gaps": output_gaps,
+                "first_most_common": first_most_common,
+                "second_most_common": second_most_common,
+                "following": following,
+                "url_path_name": url_path_name,
+                "output_no_pair": output_no_pair})
     else:
         return render(request, "index.html", {
             "page" : page})
@@ -72,6 +82,7 @@ def items(request):
     filter_exact = ("exact" in request.GET)
     filter_tier = request.GET.get("tier")
     filter_showNonsense = ("showNonsense" in request.GET)
+    filter_emoji = request.GET.get("emoji")
     order = request.GET.get("order")
     if order is None:
         order = "tier"
@@ -89,6 +100,11 @@ def items(request):
         items = items.filter(tier = filter_tier)
     if not filter_showNonsense:
         items = items.filter(isReal=True)
+    if filter_emoji == "has_emoji":
+        items = items.filter(emoji__isnull=False)
+    elif filter_emoji == "no_emoji":
+        items = items.filter(emoji__isnull=True)
+
     page = Paginator(items, 50).get_page(page_number)
     return render(request, "items.html", {"page" : page})
 
@@ -100,12 +116,14 @@ def gaps(request):
     )
     length = pairs.count()
     last_gap = pairs[length-1]
-    gap_with_biggest_tier = pairs.order_by("second_input__tier", "from_AB_C__timeCreated")[length-1]
     first_gap = pairs[0]
     median_gap = pairs[int(length/2)]
     random_gap = pairs[random.choice(range(length))]
+    gap_with_biggest_tier = pairs.order_by("second_input__tier", "from_AB_C__timeCreated")[length-1]
+    gap_with_smallest_tier = pairs.order_by("first_input__tier", "second_input__tier", "from_AB_C__timeCreated")[0]
     gaps = [
         {"pair": first_gap, "name": "First Gap"},
+        {"pair": gap_with_smallest_tier, "name": "Gap with smallest tier"},
         {"pair": last_gap, "name": "Last Gap"},
         {"pair": gap_with_biggest_tier, "name": "Gap with biggest tier"},
         {"pair": median_gap, "name": "Median Gap"},
@@ -202,26 +220,30 @@ def newTransformation(first_input, second_input, output, isReal=1):
     try:   
         input_pair = ItemPair.pairFromStrings(first_input, second_input)
     except InputDoesNotExist as error:
-        return {"success": False, "message": error}
+        return {"success": False, "error": error}
 
     try:
         existing_tr = Transformation.objects.get(input_pair=input_pair)
         if existing_tr.output.name == output:
             existing_tr.updateTier()
-            return {"success": False, "message": f"This transformation already exists! {existing_tr}", "tr": existing_tr}
+            return {"success": False, 
+                    "error": f"This transformation already exists! {existing_tr}", 
+                    "tr": existing_tr}
         else:
             return {"success": False, 
-                    "message": f"The database says this transformation has a result of {existing_tr.output.name} and not {output}, please check again.", 
+                    "error": f"The database says this transformation has a result of {existing_tr.output.name} and not {output}, please check again.", 
                     "tr": existing_tr}
     except Transformation.DoesNotExist:
-        message = ''
+        #message = ''
         try:
             output = Item.objects.get(name=output)
+            new_item = False
         except Item.DoesNotExist:
             tier = max(input_pair.first_input.tier, input_pair.second_input.tier) + 1
             output = Item(name=output, tier=tier, isReal=isReal)
             output.save()
-            message = f"New Item: {output}"
+            #message = f"New Item: {output}"
+            new_item = True
                     
         transformation = Transformation(input_pair=input_pair, output=output)
         transformation.save()
@@ -230,12 +252,13 @@ def newTransformation(first_input, second_input, output, isReal=1):
             output.simplestWayToMake = transformation
             output.save()
         
-        message += transformation.updateTier()
+        changes = transformation.updateTier()
         
         transformation.makeGapPairs()
 
-        return {"success": True, 
-                "message": message,
+        return {"success": True,
+                "new_item":new_item, 
+                "changes": changes,
                 "tr": transformation}
 
 
@@ -309,12 +332,16 @@ def populatePairs():
 def addEmoji(request):
     try:
         data = json.loads(request.body)
+    except Exception as error:
+        print(error)
+        return HttpResponse(status=500)
+    try:    
         item = Item.objects.get(name=data.get("name"))
         item.emoji = data.get("emoji")
         item.save()
         return HttpResponse(status=201)
     except Exception as error:
-        print(error)
+        print(f"Error: {error} on item: {data.get('name')}")
         return HttpResponse(status=500)
     
 def checkPairsOrder():

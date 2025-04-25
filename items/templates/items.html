@@ -16,6 +16,11 @@
         <div class="form-check mx-sm-3 mb-2">
             <input class="form-check-input" type="checkbox" value="" name="showNonsense">
             <label class="form-check-label" for="showNonsense">Show nonsense items?</label>
+            <select class="form-control" name="emoji">
+                <option value="has_emoji">With emoji</option>
+                <option value="no_emoji">With no emoji</option>
+                <option value="any_emoji" selected>All emoji values</option>
+            </select>
         </div>
         <div class="form-group mx-sm-3 mb-2">
             <label for="order" class="col-sm-2 control-label">Order by</label>
@@ -54,19 +59,19 @@
                     <td>
                         <button class="btn btn-light" onclick="navigator.clipboard.writeText('{{item.simplestWayToMake.input_pair.first_input.name}}')">🗐</button>
                         <a href="{% url 'item' item.simplestWayToMake.input_pair.first_input.id %}">
-                            {{item.simplestWayToMake.input_pair.first_input.name}} ({{item.simplestWayToMake.input_pair.first_input.tier}})
+                            {{item.simplestWayToMake.input_pair.first_input}}
                         </a>
                     </td>
                     <td>
                         <button class="btn btn-light" onclick="navigator.clipboard.writeText('{{item.simplestWayToMake.input_pair.second_input.name}}')">🗐</button>
                         <a href="{% url 'item' item.simplestWayToMake.input_pair.second_input.id %}">
-                            {{item.simplestWayToMake.input_pair.second_input.name}} ({{item.simplestWayToMake.input_pair.second_input.tier}})
+                            {{item.simplestWayToMake.input_pair.second_input}}
                         </a>
                     </td>
                     <td>
                         <button class="btn btn-light" onclick="navigator.clipboard.writeText('{{item.name}}')">🗐</button>
                         <a href="{% url 'item' item.id %}">
-                            {{item.name}} ({{item.tier}})
+                            {{item}}
                         </a>
                     </td>
                     <td>{{item.timeCreated|date:"M j, g:i a"}}</td>
