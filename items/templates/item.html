@@ -36,9 +36,11 @@
     <h4>Chain:</h4>
     <br>
     <div class="col-10">
-        {% with 'images/'|add:name_wo_special_char|add:'.html' as path %}
-            {% include path %}
-        {% endwith %}
+        {% if image_format == "html" %}
+            {% include image_path %}
+        {% else %}
+            <embed width=100% scrolling="yes">{% include image_path %}</embed>
+        {% endif %}
     </div>
     <br>
 

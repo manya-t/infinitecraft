@@ -30,13 +30,39 @@ fetch("https://neal.fun/api/infinite-craft/pair?first=Mountain&second=Earth")
         console.log(data);
     });
 
-
+# assigning emoji from saved webpage
 for key in result_dict:
-    ...:     try:
-    ...:         item = Item.fetch(key)
-    ...:         if item.emoji is None:
-    ...:             item.emoji = result_dict[key]
-    ...:             item.save()
-    ...:     except Item.DoesNotExist:
-    ...:         print(f"{key} does not exist")
-    ...:
+         try:
+             item = Item.fetch(key)
+             if item.emoji is None:
+                 item.emoji = result_dict[key]
+                 item.save()
+         except Item.DoesNotExist:
+             print(f"{key} does not exist")
+    
+
+    # print items where the most common output is of a higher tier than one would expect
+    for item in items:
+          mostCommonOutput = item.mostCommonOutput()
+          if mostCommonOutput["item"].tier>(item.tier+1) and mostCommonOutput["item"].tier>5:
+              print(item)
+              print(mostCommonOutput)
+          if item.tier>5:
+              break
+
+    # print pairs or lack thereof for a single item for all items of tier<=4
+     for item in items_4:
+          try:
+              print(ItemPair.fetch(item.name, "Ghost"))
+          except:
+              print(item)
+     
+
+    # print first item with most common frequency at most 1
+    for item in items:
+        mostCommonOutput = item.mostCommonOutput()
+        if mostCommonOutput["freq"]<=1:
+            i = item
+            print(item)
+            print(mostCommonOutput)
+            break

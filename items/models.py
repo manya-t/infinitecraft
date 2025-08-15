@@ -3,6 +3,7 @@ from django.db.models import Count, CharField
 from django.db.models.functions import Length
 from pyvis.network import Network
 from itertools import combinations_with_replacement
+import graphviz
 
 CharField.register_lookup(Length, 'length')
 
@@ -41,7 +42,13 @@ class Item(models.Model):
         return Item.objects.get(name=name)
     
     def gaps(self):
-        qs = self.as_first_in_pair.all() | self.as_second_in_pair.all()
+        ID_OF_NOT = 260
+        if self.isReal:
+            qs = self.as_first_in_pair.exclude(second_input__id=ID_OF_NOT) | self.as_second_in_pair.exclude(first_input__id=ID_OF_NOT)
+        elif self.id == ID_OF_NOT:
+            qs  = ItemPair.objects.none()
+        else:
+            qs = self.as_first_in_pair.filter(second_input__isReal=True) | self.as_second_in_pair.filter(first_input__isReal=True)
         return qs.filter(as_inputs__isnull=True).order_by("second_input__tier", "first_input__tier")
 
     def makeAllGaps(self):        
@@ -93,7 +100,7 @@ class Item(models.Model):
             return currentResult
 
     def mostCommonOutput(self):
-        outputs_by_freq = self.makes().values("output").annotate(freq=Count("output")).order_by("-freq")
+        outputs_by_freq = self.makes().values("output").annotate(freq=Count("output")).order_by("-freq", "output__tier","-output__isReal")
         if outputs_by_freq.count() == 0:
             return {"output":None, "freq":0, "item":None}
         else:
@@ -102,15 +109,21 @@ class Item(models.Model):
             return most_common
     
     def chainGraph(self, highlight=False):
-        net = Network(directed=True)
-
-        if highlight:
-            most_recent = Transformation.objects.all().order_by("-timeCreated")[0]
-            to_highlight = [most_recent.input_pair.first_input, most_recent.input_pair.second_input, most_recent.output]
+        most_recent = Transformation.objects.all().order_by("-timeCreated")[0]
+        to_highlight = [most_recent.input_pair.first_input, most_recent.input_pair.second_input, most_recent.output]
+        makes_trs = self.makes()
+        pyvis = (makes_trs.count()<300)
+        dir = 'items/templates/images/'
+        filename = self.name_wo_special_char()
+        format = "html" if pyvis else "gv.svg"
+        
+        if pyvis:
+            net = Network(directed=True)
         else:
-            to_highlight = []
+            graph = graphviz.Digraph(filename, format='svg', engine='sfdp')
+            graph.attr(size="12,12")
 
-        for tr in self.makes():
+        for tr in makes_trs:
             if tr.input_pair.first_input == self:
                 other_input = tr.input_pair.second_input
             else:
@@ -127,12 +140,21 @@ class Item(models.Model):
             if not tr.output.isReal:
                 color_output = PyvisConstants.COLOR_NOT_REAL
 
-            net.add_node(other_input.id, label=str(other_input), shape="ellipse", color=color_input)
-            net.add_node(tr.output.id, label=str(tr.output), shape="ellipse", color=color_output)
-            net.add_edge(other_input.id, tr.output.id)
-        
-        
-        net.save_graph('items/templates/images/' + self.name_wo_special_char() + '.html')
+            if pyvis:
+                net.add_node(other_input.id, label=str(other_input), shape="ellipse", color=color_input)
+                net.add_node(tr.output.id, label=str(tr.output), shape="ellipse", color=color_output)
+                net.add_edge(other_input.id, tr.output.id)
+            else:
+                graph.node(str(other_input.id), label=str(other_input), style="filled", fillcolor=color_input)
+                graph.node(str(tr.output.id), label=str(tr.output), style="filled", fillcolor=color_output)
+                graph.edge(str(other_input.id), str(tr.output.id))
+
+        if pyvis:            
+            net.save_graph(dir + filename + '.' + format)
+        else:
+            graph.render(directory=dir)
+        return format
+
 
     def name_wo_special_char(self):
         clean_name = self.name.replace("?","%3F").replace("/", "%2F").replace("\\", "%5c")
@@ -143,12 +165,22 @@ class Item(models.Model):
             clean_name = clean_name + "-unreserved"
         return clean_name
     
-    def list_by_emoji(item_name):
-        item = Item.fetch(item_name)
-        if item.emoji is None:
-            raise Exception(f"No emoji found for {item}")
-        return list(Item.objects.filter(emoji=item.emoji, isReal=True).order_by("tier","name").all())
+    def list_by_emoji(self):
+        if self.emoji is None:
+            raise Exception(f"No emoji found for {self}")
+        return list(Item.objects.filter(emoji=self.emoji, isReal=True).order_by("tier","name").all())
     
+    def report_pairs(self, item_list):
+        results = []
+        for item in item_list:
+            ordered_pair = ItemPair.orderItems([item,self])
+            try:
+                result = ItemPair.objects.get(first_input=ordered_pair[0], second_input=ordered_pair[1])
+            except ItemPair.DoesNotExist:
+                result = f"Pair {ordered_pair[0]} + {ordered_pair[1]} does not exist"
+            results.append(result)
+        return results
+
     def no_pair(self):
         items = Item.objects.filter(isReal=1).order_by("tier","name")
         for item in items:
@@ -307,11 +339,6 @@ class ItemPair(models.Model):
         
     def report_pairs(item_list):
         results = []
-        for items in combinations_with_replacement(item_list,2):
-            items = ItemPair.orderItems(list(items))
-            try:
-                result = ItemPair.objects.get(first_input=items[0], second_input=items[1])
-            except ItemPair.DoesNotExist:
-                result = f"Pair {items[0]} + {items[1]} does not exist"
-            results.append(result)
+        for item in item_list:
+            results += item.report_pairs(item_list)
         return results

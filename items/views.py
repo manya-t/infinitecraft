@@ -8,8 +8,8 @@ from .models import Item, InputDoesNotExist, Transformation, ItemPair, PyvisCons
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
-from pyvis.network import Network
 import pytz
+import graphviz
 
 # Create your views here.
 def index(request):
@@ -41,7 +41,7 @@ def index(request):
             if following is None:
                 following = tr.input_pair.second_input
                 
-            following.chainGraph(highlight=True)
+            image_format = following.chainGraph()
             gaps = following.gaps()
             gaps_continuing = []
             other_gaps = []
@@ -50,8 +50,8 @@ def index(request):
                     gaps_continuing.append(gap)
                 else:
                     other_gaps.append(gap)        
-
-            url_path_name = following.name_wo_special_char()
+            
+            image_path = "images/" + following.name_wo_special_char() + '.' + image_format
 
             output_no_pair = tr.output.no_pair()
             output_gaps = tr.output.gaps()
@@ -70,7 +70,7 @@ def index(request):
                 "first_most_common": first_most_common,
                 "second_most_common": second_most_common,
                 "following": following,
-                "url_path_name": url_path_name,
+                "image_path": image_path,
                 "output_no_pair": output_no_pair})
     else:
         return render(request, "index.html", {
@@ -185,15 +185,16 @@ def item(request, id):
     gaps = item.gaps()
     #related = [tr.export() for tr in as_output | makes]
     
-    item.chainGraph(highlight=True)
-    name_wo_special_char = item.name_wo_special_char()
+    image_format = item.chainGraph()
+    image_path = "images/" + item.name_wo_special_char() + '.' + image_format
 
     return render(request, "item.html", {
         "item": item,
         "as_output": as_output,
         "makes": makes,
         "gaps": gaps,
-        "name_wo_special_char": name_wo_special_char
+        "image_path": image_path,
+        "image_format": image_format
         })
 
 def itemByName(request, name):
@@ -356,15 +357,15 @@ def checkPairsOrder():
     return deleted
 
 def mostCommonGraph():
-    nt = Network(directed=True)
+    graph = graphviz.Digraph('mostCommonOutputs', format='svg', engine='sfdp')
     items = Item.objects.all()
     edges = []
     for item in items:
         color = PyvisConstants.COLOR_DEFAULT if item.isReal else PyvisConstants.COLOR_NOT_REAL
-        nt.add_node(item.id, label=item.name, color=color, shape="ellipse")
-        mostCommonOutputId = item.mostCommonOutput()["output"]
-        if mostCommonOutputId is not None:
-            edges.append((item.id, item.mostCommonOutput()["output"]))
-    nt.add_edges(edges)
-    nt.save_graph('items/templates/images/mostCommonOutputs.html')
-    return
+        graph.node(str(item.id), str(item), style="filled", fillcolor=color)
+        mostCommonOutput= item.mostCommonOutput()
+        if mostCommonOutput["output"] is not None and mostCommonOutput["output"]!=260:
+            edges.append((str(item.id), str(mostCommonOutput["output"]), f"{mostCommonOutput["freq"]} time(s)"))
+    for edge in edges:
+        graph.edge(edge[0],edge[1],label=edge[2])
+    graph.render(directory='items/templates/most_common/')

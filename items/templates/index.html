@@ -70,9 +70,7 @@
             
             <div class="row">
                 <div class="col">
-                    {% with 'images/'|add:url_path_name|add:'.html' as path %}
-                        {% include path %}
-                    {% endwith %}
+                    {% include image_path %}
                 </div>
             </div>        
         {% endif %}

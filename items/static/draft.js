@@ -33,3 +33,5 @@ document.querySelectorAll(".instance").forEach((itemDiv) => {
     var textSpan = itemDiv.querySelector(".instance-text")
     updateEmoji(textSpan.innerText.trim(),emojiSpan.innerText.trim().replace(String.fromCharCode(65039),""))
 })
+
+navigator.clipboard.writeText(document.querySelector(".instance-text").innerText)

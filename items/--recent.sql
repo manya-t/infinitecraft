@@ -19,12 +19,11 @@ LEFT JOIN items_itempair p on
 left join items_transformation t on t.input_pair_id=p.id
 LEFT join items_item o on o.id = t.output_id
 WHERE 
---(max(i1.tier, i2.tier)+1)=5 and
---i2.tier<=i1.tier
+(max(i1.tier, i2.tier)+1)=5 and
+i1.tier<=i2.tier and
 t.id is null
-and i1.name='Pyramid'
 and i1.isReal=1 and i2.isReal=1
-ORDER BY max(i1.tier, i2.tier), i1.tier+i2.tier, i1.timeUpdated, i2.timeUpdated
+ORDER BY max(i1.tier, i2.tier), i1.tier+i2.tier, i1.tier, i1.name, i2.tier, i2.name
 `   
 --recently newly made or optimized items
 /* SELECT o.name, o.tier, i1.name, i1.tier, i2.name, i2.tier
@@ -57,3 +56,14 @@ where
  in (i1.name, i2.name)
 group by output_id, o.name, o.isReal
 order by num desc, o.isReal desc */
+
+
+SELECT 
+o.id, o.name, o.tier, i1.name, i1.tier, i1.id, i2.name, i2.tier, i2.id
+FROM
+items_item o
+JOIN items_transformation t on o.simplestWayToMake_id = t.id
+JOIN items_itempair p on p.id = t.input_pair_id
+JOIN items_item i1 on i1.id = p.first_input_id
+JOIN items_item i2 on i2.id = p.second_input_id
+WHERE t.id IS NULL
