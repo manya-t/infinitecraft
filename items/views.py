@@ -221,7 +221,7 @@ def newTransformation(first_input, second_input, output, isReal=1):
     try:   
         input_pair = ItemPair.pairFromStrings(first_input, second_input)
     except InputDoesNotExist as error:
-        return {"success": False, "error": error}
+        return {"success": False, "error": str(error)}
 
     try:
         existing_tr = Transformation.objects.get(input_pair=input_pair)
@@ -235,7 +235,6 @@ def newTransformation(first_input, second_input, output, isReal=1):
                     "error": f"The database says this transformation has a result of {existing_tr.output.name} and not {output}, please check again.", 
                     "tr": existing_tr}
     except Transformation.DoesNotExist:
-        #message = ''
         try:
             output = Item.objects.get(name=output)
             new_item = False
@@ -243,7 +242,6 @@ def newTransformation(first_input, second_input, output, isReal=1):
             tier = max(input_pair.first_input.tier, input_pair.second_input.tier) + 1
             output = Item(name=output, tier=tier, isReal=isReal)
             output.save()
-            #message = f"New Item: {output}"
             new_item = True
                     
         transformation = Transformation(input_pair=input_pair, output=output)
