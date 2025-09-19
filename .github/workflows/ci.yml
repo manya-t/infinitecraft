@@ -10,4 +10,5 @@ jobs:
       run: |
         pip3 install --user django
         pip3 install --user pyvis
+        pip3 install --user graphviz
         python3 manage.py test
