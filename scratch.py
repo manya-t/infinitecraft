@@ -44,7 +44,7 @@ for key in result_dict:
     # print items where the most common output is of a higher tier than one would expect
     for item in items:
           mostCommonOutput = item.mostCommonOutput()
-          if mostCommonOutput["item"].tier>(item.tier+1) and mostCommonOutput["item"].tier>5:
+          if    .tier>(item.tier+1) and mostCommonOutput["item"].tier>5:
               print(item)
               print(mostCommonOutput)
           if item.tier>5:
@@ -66,3 +66,17 @@ for key in result_dict:
             print(item)
             print(mostCommonOutput)
             break
+
+yeti_name_list = ["Yeti", "Abominable Snowman", "Bigfoot", "Sasquatch"]
+yeti_list = [Item.fetch(name) for name in yeti_name_list]
+for item in yeti_list:
+   print(f"{item} + {item.no_pair()}")
+
+v = Item.fetch("Volcano")
+items_4 = Item.objects.filter(isReal=True, tier__lte=4).order_by("tier","name")
+volcano_list = [v]
+for item in items_4:
+    if item.mostCommonOutput()["item"] == v:
+        volcano_list.append(item)
+for item in volcano_list:
+    print(f"{item} + {item.no_pair()}")

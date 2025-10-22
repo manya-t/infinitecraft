@@ -16,7 +16,45 @@ from random import choice
 driver = webdriver.Chrome() """
 
 class ItemsTestCase(TestCase):
+    def setUp(self):
+        for i in range(2):
+            Item(name=i, tier=1).save()
+        newTransformation("1","1","2")
+        newTransformation("1","2","3")
+    
+    def test_print(self):
+        i = Item.objects.get(name="0")
+        self.assertEqual(str(i), "0 (1)")
 
+    def test_makes(self):
+        i = Item.objects.get(name="1")
+        tr_queryset = Transformation.objects.all()
+        self.assertQuerySetEqual(i.makes(), tr_queryset)
+
+    def test_makes_empty(self):
+        i = Item.objects.get(name="0")
+        self.assertQuerySetEqual(i.makes(), Transformation.objects.none())
+
+    def test_related(self):
+        pass
+
+    def test_fetch(self):
+        i = Item.objects.get(name="0")
+        self.assertEqual(i, Item.fetch("0"))
+
+    def test_gaps(self):
+        item = Item.objects.get(name="3")
+        gaps = [
+            ItemPair.fetch("1","3"),
+            ItemPair.fetch("2","3"),
+            ItemPair.fetch("3","3")
+            ]
+        self.assertEqual(list(item.gaps()), gaps)
+    
+    def test_gaps_if_not_real(self):
+        pass
+
+class MiscTestCase(TestCase):
     def setUp(self):
         for i in range(2):
             Item(name=i, tier=1).save()
@@ -60,14 +98,6 @@ class ItemsTestCase(TestCase):
         result = newTransformation("0","3","2")
         self.assertFalse(result["success"])
         self.assertEqual(result["error"], 'Input (3) does not exist. Enter a transformation that fixes that and then try again.')
-        
-    def test_gaps(self):
-        item = Item.objects.get(name="2")
-        gaps = [ItemPair.fetch("0","2"),
-                ItemPair.fetch("1","2"),
-                ItemPair.fetch("2","2")
-                ]
-        self.assertEqual(list(item.gaps()),gaps)
 
     def test_second_tier_higher(self):
         pass

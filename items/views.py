@@ -110,7 +110,8 @@ def items(request):
 
 def gaps(request):
     pairs = (
-        ItemPair.objects.filter(first_input__isReal=1, second_input__isReal=1, as_inputs__isnull=True)
+        ItemPair.objects.filter(as_inputs__isnull=True, first_input__canCombine=True, second_input__canCombine=True)
+        .exclude(first_input__isReal=False, second_input__isReal=False )
         .annotate(tier_sum = F("first_input__tier")+F("second_input__tier"))
         .order_by("tier_sum", "from_AB_C__timeCreated")
     )
@@ -178,6 +179,7 @@ def item(request, id):
     if request.method == 'POST':
         item.name = request.POST["name"]
         item.isReal = ("isReal" in request.POST)
+        item.canCombine = ("canCombine" in request.POST)
         item.save()   
     
     as_output = item.as_output.all()

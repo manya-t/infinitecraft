@@ -20,6 +20,7 @@ class Item(models.Model):
     tier = models.IntegerField()
     isReal = models.BooleanField(default=True)
     simplestWayToMake = models.ForeignKey("items.Transformation", on_delete = models.SET_NULL, related_name = "is_simplest_to_make", null=True)
+    canCombine = models.BooleanField(default=True)
 
     def __str__(self) -> str:
         emoji_string = self.emoji if self.emoji else ""
@@ -42,10 +43,9 @@ class Item(models.Model):
         return Item.objects.get(name=name)
     
     def gaps(self):
-        ID_OF_NOT = 260
         if self.isReal:
-            qs = self.as_first_in_pair.exclude(second_input__id=ID_OF_NOT) | self.as_second_in_pair.exclude(first_input__id=ID_OF_NOT)
-        elif self.id == ID_OF_NOT:
+            qs = self.as_first_in_pair.filter(second_input__canCombine=True) | self.as_second_in_pair.filter(first_input__canCombine=True)
+        elif not self.canCombine:
             qs  = ItemPair.objects.none()
         else:
             qs = self.as_first_in_pair.filter(second_input__isReal=True) | self.as_second_in_pair.filter(first_input__isReal=True)
@@ -189,6 +189,24 @@ class Item(models.Model):
                 ItemPair.objects.get(first_input=ordered[0], second_input=ordered[1])
             except:
                 return item
+
+    # to undo a tr that made a bad tier update     
+    def updateTier(self):
+        self.tier = 100
+        all_ways_to_make =  self.as_output.all()
+        self.simplestWayToMake = all_ways_to_make[0]
+        changes = []
+
+        for tr in all_ways_to_make:
+            changes.extend(tr.updateTier())
+
+        item_list = Item.objects.none()
+        for tr in self.makes():
+            item_list = item_list | tr.is_simplest_to_make.all()
+
+        for i in item_list:
+            changes.extend(i.updateTier())
+        return changes
 
 class InputDoesNotExist(Item.DoesNotExist):
     def __init__(self, name, *args: object) -> None:
