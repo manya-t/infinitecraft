@@ -41,7 +41,7 @@ def index(request):
             if following is None:
                 following = tr.input_pair.second_input
 
-            chainGraphHtml = getChainGraph(following)
+            chainGraphHtml = following.chainGraph()
             gaps = following.gaps()
             gaps_continuing = []
             other_gaps = []
@@ -185,7 +185,7 @@ def item(request, id):
     gaps = item.gaps()
     no_pair = item.no_pair()
     
-    chainGraphHtml = getChainGraph(item)
+    chainGraphHtml = item.chainGraph()
 
     return render(request, "item.html", {
         "item": item,
