@@ -10,20 +10,20 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 import pytz
 import graphviz
+from django.core.cache import cache
 
-# Create your views here.
 def index(request):
     all_tr = Transformation.objects.all().order_by("-timeCreated")
     page_number = request.GET.get("page")
     page = Paginator(all_tr, 50).get_page(page_number)
-    #message = ""
+    
     if request.method == "POST":
         isReal = ("isNonsense" not in request.POST)
         result = newTransformation(first_input=request.POST["first_input"], 
                           second_input=request.POST["second_input"], 
                           output=request.POST['output'], 
                           isReal=isReal)
-        #message = result["message"]
+        
         if not result["success"]:
             return render(request, "index.html", {
                 "success": result["success"],
@@ -40,8 +40,8 @@ def index(request):
             following = tr.input_pair.following()
             if following is None:
                 following = tr.input_pair.second_input
-                
-            image_format = following.chainGraph()
+
+            chainGraphHtml = getChainGraph(following)
             gaps = following.gaps()
             gaps_continuing = []
             other_gaps = []
@@ -50,8 +50,6 @@ def index(request):
                     gaps_continuing.append(gap)
                 else:
                     other_gaps.append(gap)        
-            
-            image_path = f"images/{following.name_wo_special_char()}.{image_format}"
 
             output_no_pair = tr.output.no_pair()
             output_gaps = tr.output.gaps()
@@ -70,7 +68,7 @@ def index(request):
                 "first_most_common": first_most_common,
                 "second_most_common": second_most_common,
                 "following": following,
-                "image_path": image_path,
+                "chainGraphHtml": chainGraphHtml,
                 "output_no_pair": output_no_pair})
     else:
         return render(request, "index.html", {
@@ -185,18 +183,17 @@ def item(request, id):
     as_output = item.as_output.all()
     makes = item.makes()
     gaps = item.gaps()
-    #related = [tr.export() for tr in as_output | makes]
+    no_pair = item.no_pair()
     
-    image_format = item.chainGraph()
-    image_path = "images/" + item.name_wo_special_char() + '.' + image_format
+    chainGraphHtml = getChainGraph(item)
 
     return render(request, "item.html", {
         "item": item,
         "as_output": as_output,
         "makes": makes,
         "gaps": gaps,
-        "image_path": image_path,
-        "image_format": image_format
+        "chainGraphHtml": chainGraphHtml,
+        "no_pair": no_pair
         })
 
 def itemByName(request, name):
@@ -387,3 +384,12 @@ def mostCommonGraph():
     for edge in edges:
         graph.edge(edge[0],edge[1],label=edge[2])
     graph.render(directory='items/templates/most_common/')
+
+def getChainGraph(item):
+    cached = cache.get(f'graph_{item.id}')
+    if cached:
+        return cached
+    
+    graph = item.chainGraph()
+    cache.set(f'graph_{item.id}', graph, 3600)
+    return graph

@@ -42,11 +42,7 @@
     <h4>Chain:</h4>
     <br>
     <div class="col-10">
-        {% if image_format == "html" %}
-            {% include image_path %}
-        {% else %}
-            <embed width=100% scrolling="yes">{% include image_path %}</embed>
-        {% endif %}
+        <embed width=100% scrolling="yes">{{chainGraphHtml|safe}}</embed>
     </div>
     <br>
 
@@ -67,4 +63,7 @@
         {{pair}}<br>
     {% endfor %}
     <br>
+
+    <h4>First no pair:</h4>
+    {{no_pair}}
 {% endblock %}

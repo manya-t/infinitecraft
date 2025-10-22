@@ -4,6 +4,8 @@ from django.db.models.functions import Length
 from pyvis.network import Network
 from itertools import combinations_with_replacement
 import graphviz
+import tempfile
+import os
 
 CharField.register_lookup(Length, 'length')
 
@@ -108,19 +110,19 @@ class Item(models.Model):
             most_common['item'] = Item.objects.get(id=most_common['output'])
             return most_common
     
-    def chainGraph(self, highlight=False):
-        most_recent = Transformation.objects.all().order_by("-timeCreated")[0]
-        to_highlight = [most_recent.input_pair.first_input, most_recent.input_pair.second_input, most_recent.output]
+    def chainGraph(self, highlight=None):
+        if highlight:
+            to_highlight = highlight
+        else:
+            most_recent = Transformation.objects.all().order_by("-timeCreated")[0]
+            to_highlight = [most_recent.input_pair.first_input, most_recent.input_pair.second_input, most_recent.output]
         makes_trs = self.makes()
         pyvis = (makes_trs.count()<300)
-        dir = 'items/templates/images/'
-        filename = self.name_wo_special_char()
-        format = "html" if pyvis else "gv.svg"
         
         if pyvis:
             net = Network(directed=True)
         else:
-            graph = graphviz.Digraph(filename, format='svg', engine='sfdp')
+            graph = graphviz.Digraph(format='svg', engine='sfdp')
             graph.attr(size="12,12")
 
         for tr in makes_trs:
@@ -149,11 +151,17 @@ class Item(models.Model):
                 graph.node(str(tr.output.id), label=str(tr.output), style="filled", fillcolor=color_output)
                 graph.edge(str(other_input.id), str(tr.output.id))
 
-        if pyvis:            
-            net.save_graph(dir + filename + '.' + format)
+        if pyvis:     
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as temp_file:
+                temp_path = temp_file.name
+            net.write_html(temp_path)
+            with open(temp_path, 'r') as file:
+                result = file.read()
+            os.remove(temp_path)
         else:
-            graph.render(directory=dir)
-        return format
+            result = graph.pipe(format='svg').decode('utf-8')
+
+        return result
 
 
     def name_wo_special_char(self):
@@ -242,7 +250,6 @@ class Transformation(models.Model):
         return f"{self.input_pair.first_input} + {self.input_pair.second_input} = {self.output}"
              
     def updateTier(self):
-        #message = ""
         changes = []
 
         # this SHOULD always be the second one, but just in case
@@ -256,12 +263,10 @@ class Transformation(models.Model):
                       "new_tier": trTier,
                       "new_simplest": self}
             changes.append(change)
-            #message += f"{output.name} has a new simplest way to make it! <br>Was: {output.simplestWayToMake}<br>"
             
             output.tier = trTier
             output.simplestWayToMake = self
             output.save()
-            #message +=f"Now: {self}<br>"
 
             for pair in output.as_first_in_pair.all() | output.as_second_in_pair.all():
                 pair.checkOrder()
@@ -270,7 +275,6 @@ class Transformation(models.Model):
                     changes.extend(tr.updateTier())
                 except (Transformation.DoesNotExist):
                     pass
-                    #message += tr_set[0].updateTier()
         return changes
 
     def export(self):
