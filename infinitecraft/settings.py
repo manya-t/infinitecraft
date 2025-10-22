@@ -74,12 +74,21 @@ WSGI_APPLICATION = 'infinitecraft.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL')
-        )
-}
+environ_db_url = os.environ.get('DATABASE_URL')
+if environ_db_url:
+    DATABASES = {
+        'default': dj_database_url.config(default=environ_db_url)
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+            'TEST': {
+                'NAME': 'test_database.sqlite3',
+            },
+        }
+    }
 
 
 # Password validation
