@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'your-default-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['infinitecraft.up.railway.app', 'localhost', '127.0.0.1']
 
@@ -127,6 +127,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CSRF_TRUSTED_ORIGINS = ['https://neal.fun']
+CSRF_TRUSTED_ORIGINS = ['https://neal.fun', 'https://infinitecraft.up.railway.app']
 
-CORS_ALLOWED_ORIGINS = ['https://neal.fun']
+CORS_ALLOWED_ORIGINS = ['https://neal.fun', 'https://infinitecraft.up.railway.app']
