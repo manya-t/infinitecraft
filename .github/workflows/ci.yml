@@ -11,4 +11,5 @@ jobs:
         pip3 install --user django
         pip3 install --user pyvis
         pip3 install --user graphviz
+        pip3 install --user dj_database_url
         python3 manage.py test
