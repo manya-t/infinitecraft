@@ -51,7 +51,7 @@ def index(request):
                 else:
                     other_gaps.append(gap)        
             
-            image_path = "images/" + following.name_wo_special_char() + '.' + image_format
+            image_path = f"images/{following.name_wo_special_char()}.{image_format}"
 
             output_no_pair = tr.output.no_pair()
             output_gaps = tr.output.gaps()
@@ -219,7 +219,24 @@ def exportSet(request):
         export = [tr.export() for tr in outputs | first_inputs | second_inputs]
     return render(request, "exportSet.html", {"export": export})
 
-def newTransformation(first_input, second_input, output, isReal=1):
+def newTransformation(first_input, second_input, output, isReal=True):
+    """
+    Creates a new Transformation object if one does not already exist for the given input pair and output.
+
+    Parameters:
+        first_input (str): The name of the first input item.
+        second_input (str): The name of the second input item.
+        output (str): The name of the output item.
+        isReal (bool, optional): Whether the transformation is considered 'real'. Defaults to True.
+
+    Returns:
+        dict: A dictionary containing:
+            - 'success' (bool): Whether the transformation was successfully created.
+            - 'error' (str, optional): Error message if unsuccessful.
+            - 'tr' (Transformation, optional): The transformation object.
+            - 'new_item' (bool, optional): Whether a new item was created.
+            - 'changes' (any, optional): Changes made during tier update.
+    """
     try:   
         input_pair = ItemPair.pairFromStrings(first_input, second_input)
     except InputDoesNotExist as error:
@@ -245,10 +262,11 @@ def newTransformation(first_input, second_input, output, isReal=1):
             output = Item(name=output, tier=tier, isReal=isReal)
             output.save()
             new_item = True
-                    
+
         transformation = Transformation(input_pair=input_pair, output=output)
         transformation.save()
 
+        output.refresh_from_db()
         if output.simplestWayToMake is None:
             output.simplestWayToMake = transformation
             output.save()

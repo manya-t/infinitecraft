@@ -192,6 +192,10 @@ class Item(models.Model):
 
     # to undo a tr that made a bad tier update     
     def updateTier(self):
+        """
+        Updates the tier of the output item if a simpler transformation is found, 
+        recursively updates related transformations, and returns a list of changes made.
+        """
         self.tier = 100
         all_ways_to_make =  self.as_output.all()
         self.simplestWayToMake = all_ways_to_make[0]
@@ -214,6 +218,14 @@ class InputDoesNotExist(Item.DoesNotExist):
         super().__init__(msg, *args)
 
 class Transformation(models.Model):
+    """
+    Represents a transformation from a pair of input items to an output item.
+
+    Note:
+        The fields `first_input` and `second_input` are deprecated and kept for legacy support.
+        Use `input_pair` instead for all new code.
+    """
+    # DEPRECATED: first_input and second_input are legacy fields, use input_pair instead
     first_input = models.ForeignKey(Item, on_delete = models.CASCADE, related_name = "as_first_input", null=True) 
     second_input = models.ForeignKey(Item, on_delete = models.CASCADE, related_name = "as_second_input", null=True)
     input_pair = models.ForeignKey("items.ItemPair", on_delete = models.CASCADE, related_name = "as_inputs")
@@ -223,7 +235,7 @@ class Transformation(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=("first_input", "second_input"), name="unique_transformation_inputs")
+            models.UniqueConstraint(fields=("input_pair",), name="unique_transformation_inputs")
         ]
 
     def __str__(self) -> str:
@@ -256,13 +268,13 @@ class Transformation(models.Model):
                 try:
                     tr = Transformation.objects.get(input_pair=pair)
                     changes.extend(tr.updateTier())
-                except:
+                except (Transformation.DoesNotExist):
                     pass
                     #message += tr_set[0].updateTier()
         return changes
 
     def export(self):
-        return f"{self.second_input}->{self.first_input}->{self.output}"
+        return f"{self.input_pair.second_input}->{self.input_pair.first_input}->{self.output}"
     
     def makeGapPairs(self):
         pairsToCheck = [[self.input_pair.first_input, self.output], 
@@ -289,16 +301,17 @@ class ItemPair(models.Model):
     def __str__(self) -> str:
         try:
             output_string = self.as_inputs.get().output
-        except:
+        except Transformation.DoesNotExist:
             output_string = "???"
         return f"{self.first_input} + {self.second_input} = {output_string}"
     
+    @staticmethod
     def fetch(str1, str2):
         try:
             return ItemPair.objects.get(first_input__name=str1, second_input__name=str2)
         except:
             return ItemPair.objects.get(first_input__name=str2, second_input__name=str1)
-
+    @staticmethod
     def pairFromStrings(first_input, second_input):
         item_list = []
         for name in [first_input, second_input]:
@@ -308,7 +321,8 @@ class ItemPair(models.Model):
                 raise InputDoesNotExist(name=name)
         pair = ItemPair.getOrMakePairFromList(item_list)
         return pair
-    
+        return pair
+    @staticmethod
     def getOrMakePairFromList(item_list):
         item_list = ItemPair.orderItems(item_list)
         try:
@@ -317,22 +331,22 @@ class ItemPair(models.Model):
             pair = ItemPair(first_input=item_list[0], second_input=item_list[1])
             pair.save()
         return pair
+        return pair
     
+    @staticmethod
     def orderItems(item_list):
-        item_list.sort(key= lambda item: item.name)
-        item_list.sort(key= lambda item: item.tier)
+        item_list.sort(key= lambda item: (item.tier, item.name))
         return item_list
 
+    @staticmethod
     def dedupeAndSortPairs(pair_list):
         pair_list = list(set(pair_list))
         pair_list = ItemPair.sortListOfPairs(pair_list)
         return pair_list
     
+    @staticmethod
     def sortListOfPairs(pair_list):
-        pair_list.sort(key = lambda pair: pair.first_input.name)
-        pair_list.sort(key = lambda pair: pair.second_input.name)
-        pair_list.sort(key = lambda pair: pair.first_input.tier)
-        pair_list.sort(key = lambda pair: pair.second_input.tier)
+        pair_list.sort(key = lambda pair: (pair.second_input.tier, pair.first_input.tier, pair.second_input.name, pair.first_input.name))
         return pair_list
     
     def checkOrder(self):
