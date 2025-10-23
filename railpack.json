@@ -4,7 +4,11 @@
     "install": {
       "commands": [
         "apt-get update",
-        "apt-get install -y graphviz",
+        "apt-get install -y graphviz"
+      ]
+    },
+    "build": {
+      "commands": [
         "python manage.py makemigrations",
         "python manage.py migrate"
       ]
