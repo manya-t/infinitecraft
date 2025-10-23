@@ -3,7 +3,7 @@ from django.db.models import Count, CharField
 from django.db.models.functions import Length
 from pyvis.network import Network
 from itertools import combinations_with_replacement
-import graphviz
+import graphviz, graphviz.backend
 import tempfile
 import os
 
@@ -122,7 +122,6 @@ class Item(models.Model):
         if pyvis:
             net = Network(directed=True)
         else:
-            print("Current PATH:", os.environ.get('PATH'))
             graph = graphviz.Digraph(format='svg', engine='sfdp')
             graph.attr(size="12,12")
 
@@ -160,6 +159,8 @@ class Item(models.Model):
                 result = file.read()
             os.remove(temp_path)
         else:
+            graphviz.backend.GRAPHVIZ_DOT = '/usr/bin/dot'
+            print("Current PATH:", os.environ.get('PATH'))
             result = graph.pipe(format='svg').decode('utf-8')
 
         return result
