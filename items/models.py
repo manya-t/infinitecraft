@@ -122,6 +122,7 @@ class Item(models.Model):
         if pyvis:
             net = Network(directed=True)
         else:
+            graphviz.backend.GRAPHVIZ_DOT = '/usr/bin/dot'
             graph = graphviz.Digraph(format='svg', engine='sfdp')
             graph.attr(size="12,12")
 
