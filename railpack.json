@@ -6,16 +6,9 @@
             "apt-get update",
             "apt-get install -y graphviz"
       ]
-    },
-    "build": {
-        "inputs": [{ "step": "install" }],
-        "commands": [
-            "python manage.py makemigrations",
-            "python manage.py migrate"
-        ]
     }
   },
   "deploy": {
-    "startCommand": "gunicorn infinitecraft.wsgi"
+    "startCommand": "python manage.py makemigrations && python manage.py migrate && gunicorn infinitecraft.wsgi"
   }
 }
