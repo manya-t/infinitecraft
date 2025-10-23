@@ -159,7 +159,7 @@ class Item(models.Model):
                 result = file.read()
             os.remove(temp_path)
         else:
-            graphviz.backend.GRAPHVIZ_DOT = '/usr/bin/dot'
+            print("Graphviz DOT path:", graphviz.backend.GRAPHVIZ_DOT)
             print("Current PATH:", os.environ.get('PATH'))
             result = graph.pipe(format='svg').decode('utf-8')
 
