@@ -1,14 +1,7 @@
 {
   "$schema": "https://schema.railpack.com",
-  "steps": {
-    "install": {
-        "commands": [
-            "apt-get update",
-            "apt-get install -y graphviz"
-      ]
-    }
-  },
   "deploy": {
+    "aptPackages": ["graphviz"],
     "startCommand": "python manage.py makemigrations && python manage.py migrate && gunicorn infinitecraft.wsgi"
   }
 }
