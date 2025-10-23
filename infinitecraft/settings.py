@@ -71,7 +71,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'infinitecraft.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 environ_db_url = os.environ.get('DATABASE_URL')
