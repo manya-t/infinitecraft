@@ -134,3 +134,10 @@ If we want to drill down into what specifically the items that are produced, we 
 🐐Yankees (8) + 🥁Billy Martin (9) = 🔥Fired (10)
 🐐Yankees (8) + 🍺Red Sox (9) = 👊Rivalry (10)
 
+## Technologies
+- Django
+- PostgreSQL
+- Pyvis
+- Graphviz
+- Pandas
+- Railway (deployment)

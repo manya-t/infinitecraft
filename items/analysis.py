@@ -29,7 +29,7 @@ def mostCommonGraph(upToTier=None, excludeNot=True):
     for edge in edges:
         graph.edge(edge[0],edge[1],label=edge[2])
 
-    graph.render(directory= f'items/templates/most_common/', cleanup=True)
+    graph.render(directory='items/templates/most_common/', cleanup=True)
     return graph
 
 def productivity(items=None, threshold=None):
