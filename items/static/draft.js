@@ -1,27 +1,27 @@
-function updateEmoji(name, emoji){
-    var url="http://127.0.0.1:8000/api/addEmoji"
-    fetch(url, {
-        method: 'POST',
-        body: JSON.stringify({
-            name: name,
-            emoji: emoji
-        }),
-        mode: 'no-cors'
-    })
-}
-
-function upperLevelText(element){
-    child = element.firstChild,
-    texts = [];
-
-    while (child) {
-        if (child.nodeType == 3) {
-            texts.push(child.data);
-        }
-        child = child.nextSibling;
+    function updateEmoji(name, emoji){
+        var url="https://infinitecraft.up.railway.app/api/addEmoji"
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify({
+                name: name,
+                emoji: emoji
+            }),
+            mode: 'no-cors'
+        })
     }
-    return texts.join("");
-}
+
+    function upperLevelText(element){
+        child = element.firstChild,
+        texts = [];
+
+        while (child) {
+            if (child.nodeType == 3) {
+                texts.push(child.data);
+            }
+            child = child.nextSibling;
+        }
+        return texts.join("");
+    }
 
 document.querySelectorAll(".item").forEach((itemDiv) => {
     var emojiSpan = itemDiv.querySelector(".item-emoji")

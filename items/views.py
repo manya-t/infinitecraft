@@ -4,12 +4,11 @@ from django.db.models import F
 from django.db import IntegrityError
 import random
 from datetime import datetime, timezone
-from .models import Item, InputDoesNotExist, Transformation, ItemPair, PyvisConstants
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from .models import Item, InputDoesNotExist, Transformation, ItemPair
+from django.http import HttpResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
 import pytz
-import graphviz
 from django.core.cache import cache
 
 def index(request):
@@ -370,20 +369,6 @@ def checkPairsOrder():
             deleted.append(pair)
             pair.delete()
     return deleted
-
-def mostCommonGraph():
-    graph = graphviz.Digraph('mostCommonOutputs', format='svg', engine='sfdp')
-    items = Item.objects.all()
-    edges = []
-    for item in items:
-        color = PyvisConstants.COLOR_DEFAULT if item.isReal else PyvisConstants.COLOR_NOT_REAL
-        graph.node(str(item.id), str(item), style="filled", fillcolor=color)
-        mostCommonOutput= item.mostCommonOutput()
-        if mostCommonOutput["output"] is not None and mostCommonOutput["output"]!=260:
-            edges.append((str(item.id), str(mostCommonOutput["output"]), f"{mostCommonOutput["freq"]} time(s)"))
-    for edge in edges:
-        graph.edge(edge[0],edge[1],label=edge[2])
-    graph.render(directory='items/templates/most_common/')
 
 def getChainGraph(item):
     cached = cache.get(f'graph_{item.id}')

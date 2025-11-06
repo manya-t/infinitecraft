@@ -219,6 +219,10 @@ class Item(models.Model):
         for i in item_list:
             changes.extend(i.updateTier())
         return changes
+    
+    def makes_simplest(self):
+        trs = self.makes().filter(is_simplest_to_make__isnull=False, output__isReal=True)
+        return trs
 
 class InputDoesNotExist(Item.DoesNotExist):
     def __init__(self, name, *args: object) -> None:
