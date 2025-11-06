@@ -73,7 +73,7 @@ For example:
 ## Most common outputs
 One interesting aspect to analyze is one I mentioned briefly above: which inputs most commonly produce which outputs. Here is a graph of which outputs are most common from all the inputs of tier no more than 4:
 
-![](items\templates\most_common\mostCommonOutputs_4.gv.svg)
+![](https://github.com/manya-t/infinitecraft/blob/main/items/templates/most_common/mostCommonOutputs_4.gv.svg)
 
 You can see that there are clusters of meaning (the snow-related cluster, the ocean cluster, the volcano-related cluster). Most chains end in a pair of items that usually produce each other (`Tree` and `Forest`, `Pyramid` and `Sphinx`), but many also end in an item that usually produces itself (`Tsunami`, `Dragon`). At higher tiers, it is occasionally the case that an item will most frequently not produce anything at all. It is also possible for a chain to terminate in a cycle of more than two items, but this appears to be very rare, and often turns out to be temporary, collapsing into a two-cycle once more transformations are tried.
 
