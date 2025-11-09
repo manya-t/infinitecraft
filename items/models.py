@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Max, CharField
+from django.db.models import Max, Count, CharField
 from django.db.models.functions import Length
 from pyvis.network import Network
 import graphviz
@@ -189,7 +189,7 @@ class Item(models.Model):
     def no_pair(self):
         items_with_freq = OutcomeFrequency.objects.values("item").annotate(Max("frequency")).order_by("item__tier","frequency__max")
         for item_f in items_with_freq:
-            item = item_f["item"]
+            item = Item.objects.get(id=item_f["item"])
             try:
                 ordered = ItemPair.orderItems([item, self])
                 ItemPair.objects.get(first_input=ordered[0], second_input=ordered[1])
@@ -221,6 +221,14 @@ class Item(models.Model):
     def makes_simplest(self):
         trs = self.makes().filter(is_simplest_to_make__isnull=False, output__isReal=True)
         return trs
+    
+    def check_frequencies(self):
+        freqs =self.makes().values("output").annotate(freq=Count("id")).order_by()
+        for freq in freqs:
+            outcome_freq, created = OutcomeFrequency.objects.get_or_create(item=self, outcome=freq["output"], defaults={"frequency":0})
+            outcome_freq.frequency = freq["freq"]
+            outcome_freq.save()
+
 
 class InputDoesNotExist(Item.DoesNotExist):
     def __init__(self, name, *args: object) -> None:
