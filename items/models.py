@@ -225,7 +225,8 @@ class Item(models.Model):
     def check_frequencies(self):
         freqs =self.makes().values("output").annotate(freq=Count("id")).order_by()
         for freq in freqs:
-            outcome_freq, created = OutcomeFrequency.objects.get_or_create(item=self, outcome=freq["output"], defaults={"frequency":0})
+            outcome = Item.objects.get(id=freq["output"])
+            outcome_freq, created = OutcomeFrequency.objects.get_or_create(item=self, outcome=outcome, defaults={"frequency":0})
             outcome_freq.frequency = freq["freq"]
             outcome_freq.save()
 
