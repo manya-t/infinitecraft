@@ -405,8 +405,8 @@ class OutcomeFrequency(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="as_outcome_input")
     outcome = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="as_outcome_result")
     frequency = models.IntegerField()
-    timeCreated = models.DateTimeField(auto_now_add=True)
-    timeUpdated = models.DateTimeField(auto_now=True)
+    timecreated = models.DateTimeField(auto_now_add=True)
+    timeupdated = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [
