@@ -305,7 +305,10 @@ class Transformation(models.Model):
         return pairs
     
     def update_frequencies(self):
-        inputs = [self.input_pair.first_input, self.input_pair.second_input]
+        if self.input_pair.first_input == self.input_pair.second_input:
+            inputs = [self.input_pair.first_input]
+        else:
+            inputs = [self.input_pair.first_input, self.input_pair.second_input]
         input_freqs = []
         for input in inputs:
             input_freq = OutcomeFrequency.objects.get_or_create(item=input, outcome=self.output, defaults={"frequency":0})
