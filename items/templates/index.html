@@ -47,8 +47,13 @@
             </div>
         
             <div class="alert alert-info" role="alert">
-                {{tr.input_pair.first_input}} makes {{first_most_common.item}} {{first_most_common.freq}} times <br>
-                {{tr.input_pair.second_input}} makes {{second_most_common.item}} {{second_most_common.freq}} times
+                {{first_most_common}} <br>
+                {{second_most_common}}
+                <br>
+                {% for pair in gapPairs %}
+                    <br>
+                    {{pair}}
+                {% endfor %}
             </div>
 
             <div class="alert alert-info" role="alert">

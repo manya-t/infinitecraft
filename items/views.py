@@ -68,7 +68,10 @@ def index(request):
                 "second_most_common": second_most_common,
                 "following": following,
                 "chainGraphHtml": chainGraphHtml,
-                "output_no_pair": output_no_pair})
+                "output_no_pair": output_no_pair,
+                "gapPairs": result["gapPairs"],
+                "input_freqs": result["input_freqs"]
+                })
     else:
         return render(request, "index.html", {
             "page" : page})
@@ -268,13 +271,15 @@ def newTransformation(first_input, second_input, output, isReal=True):
             output.save()
         
         changes = transformation.updateTier()
-        
-        transformation.makeGapPairs()
+        gapPairs = transformation.makeGapPairs()
+        input_freqs = transformation.update_frequencies()
 
         return {"success": True,
                 "new_item":new_item, 
                 "changes": changes,
-                "tr": transformation}
+                "tr": transformation,
+                "gapPairs": gapPairs,
+                "input_freqs": input_freqs}
 
 
 def checkForTransformation(first_input, second_input):

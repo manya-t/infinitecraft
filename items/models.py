@@ -2,8 +2,7 @@ from django.db import models
 from django.db.models import Count, CharField
 from django.db.models.functions import Length
 from pyvis.network import Network
-from itertools import combinations_with_replacement
-import graphviz, graphviz.backend
+import graphviz
 import tempfile
 import os
 
@@ -102,13 +101,11 @@ class Item(models.Model):
             return currentResult
 
     def mostCommonOutput(self):
-        outputs_by_freq = self.makes().values("output").annotate(freq=Count("output")).order_by("-freq", "output__tier","-output__isReal")
+        outputs_by_freq = self.as_outcome_input.all().order_by("-frequency")
         if outputs_by_freq.count() == 0:
-            return {"output":None, "freq":0, "item":None}
+            return {"freq":0}
         else:
-            most_common = outputs_by_freq[0]
-            most_common['item'] = Item.objects.get(id=most_common['output'])
-            return most_common
+            return outputs_by_freq[0]
     
     def chainGraph(self, highlight=None):
         if highlight:
@@ -288,12 +285,23 @@ class Transformation(models.Model):
         pairsToCheck = [[self.input_pair.first_input, self.output], 
                          [self.input_pair.second_input, self.output],
                          [self.output, self.output]]
+        pairs = []
         for pair_list in pairsToCheck:
             pair = ItemPair.getOrMakePairFromList(pair_list)
             if pair.from_AB_C is None:
                     pair.from_AB_C = self
                     pair.save()
-        return self
+            pairs.append(pair)
+        return pairs
+    
+    def update_frequencies(self):
+        inputs = [self.input_pair.first_input, self.input_pair.second_input]
+        input_freqs = []
+        for input in inputs:
+            input_freq = OutcomeFrequency.objects.get_or_create(item=input, outcome=self.output, defaults={"frequency":0})
+            input_freq[0].frequency += 1
+            input_freqs.append(input_freq[0])
+        return input_freqs
 
     
 class ItemPair(models.Model):
@@ -319,6 +327,7 @@ class ItemPair(models.Model):
             return ItemPair.objects.get(first_input__name=str1, second_input__name=str2)
         except:
             return ItemPair.objects.get(first_input__name=str2, second_input__name=str1)
+        
     @staticmethod
     def pairFromStrings(first_input, second_input):
         item_list = []
@@ -382,3 +391,18 @@ class ItemPair(models.Model):
         for item in item_list:
             results += item.report_pairs(item_list)
         return results
+    
+class OutcomeFrequency(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="as_outcome_input")
+    outcome = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="as_outcome_result")
+    frequency = models.IntegerField()
+    timeCreated = models.DateTimeField(auto_now_add=True)
+    timeUpdated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=("item", "outcome"), name="unique_outcome_frequency")
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.item} -> {self.outcome}: {self.frequency} time(s)"       
