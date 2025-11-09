@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Count, CharField
+from django.db.models import Max, CharField
 from django.db.models.functions import Length
 from pyvis.network import Network
 import graphviz
@@ -187,12 +187,13 @@ class Item(models.Model):
         return results
 
     def no_pair(self):
-        items = Item.objects.filter(isReal=1).order_by("tier","name")
-        for item in items:
+        items_with_freq = OutcomeFrequency.objects.values("item").annotate(Max("frequency")).order_by("item__tier","frequency__max")
+        for item_f in items_with_freq:
+            item = item_f["item"]
             try:
                 ordered = ItemPair.orderItems([item, self])
                 ItemPair.objects.get(first_input=ordered[0], second_input=ordered[1])
-            except:
+            except ItemPair.DoesNotExist:
                 return item
 
     # to undo a tr that made a bad tier update     
