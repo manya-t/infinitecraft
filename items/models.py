@@ -310,6 +310,7 @@ class Transformation(models.Model):
         for input in inputs:
             input_freq = OutcomeFrequency.objects.get_or_create(item=input, outcome=self.output, defaults={"frequency":0})
             input_freq[0].frequency += 1
+            input_freq[0].save()
             input_freqs.append(input_freq[0])
         return input_freqs
 
