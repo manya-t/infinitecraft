@@ -187,7 +187,10 @@ class Item(models.Model):
         return results
 
     def no_pair(self):
-        items_with_freq = OutcomeFrequency.objects.values("item").annotate(Max("frequency")).order_by("item__tier","frequency__max")
+        items_with_freq = (OutcomeFrequency.objects.filter(item__isReal=True)
+                           .values("item")
+                           .annotate(Max("frequency"))
+                           .order_by("item__tier","frequency__max"))
         for item_f in items_with_freq:
             item = Item.objects.get(id=item_f["item"])
             try:
@@ -362,8 +365,7 @@ class ItemPair(models.Model):
             pair = ItemPair(first_input=item_list[0], second_input=item_list[1])
             pair.save()
         return pair
-        return pair
-    
+
     @staticmethod
     def orderItems(item_list):
         item_list.sort(key= lambda item: (item.tier, item.name))
