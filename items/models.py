@@ -419,4 +419,4 @@ class OutcomeFrequency(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"{self.item} -> {self.outcome}: {self.frequency} time(s)"       
+        return f"{self.item} makes {self.outcome}: {self.frequency} time(s)"       
