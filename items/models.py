@@ -190,7 +190,7 @@ class Item(models.Model):
         items_with_freq = (OutcomeFrequency.objects.filter(item__isReal=True)
                            .values("item")
                            .annotate(Max("frequency"))
-                           .order_by("item__tier","frequency__max"))
+                           .order_by("item__tier","frequency__max", "item__name"))
         for item_f in items_with_freq:
             item = Item.objects.get(id=item_f["item"])
             try:
