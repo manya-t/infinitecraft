@@ -4,19 +4,24 @@
 {% block body %}
     <form class="form-inline" action="{% url 'items' %}" method="get">
         <div class="form-group mx-sm-3 mb-2">
-            <input class="form-control" type="text" placeholder="Name" name="name">
+            <input class="form-control" type="text" placeholder="Name" name="name" value="{{request.GET.name}}">
+        </div>
+        <div class="form-group mx-sm-3 mb-2">
+            <input class="form-control" type="text" placeholder="Emoji" name="emoji" value="{{request.GET.emoji}}">
         </div>
         <div class="form-check mx-sm-3 mb-2">
-            <input class="form-check-input" type="checkbox" value="" name="exact">
+            <input class="form-check-input" type="checkbox" name="exact" {% if request.GET.exact %}checked{% endif %}>
             <label class="form-check-label" for="exact">Exact name?</label>
         </div>
         <div class="form-group mx-sm-3 mb-2">
-            <input class="form-control" type="number" min="1" placeholder="Tier" name="tier">
+            <input class="form-control" type="number" min="1" placeholder="Tier" name="tier" value="{{request.GET.tier}}">
         </div>
         <div class="form-check mx-sm-3 mb-2">
-            <input class="form-check-input" type="checkbox" value="" name="showNonsense">
-            <label class="form-check-label" for="showNonsense">Show nonsense items?</label>
-            <select class="form-control" name="emoji">
+            <input class="form-check-input" type="checkbox" name="showNonsense" {% if request.GET.showNonsense %}checked{% endif %}>
+            <label class="form-check-label" for="showNonsense">Show fake?</label>
+            <input class="form-check-input" type="checkbox" name="showNoPair" {% if request.GET.showNoPair %}checked{% endif %}>
+            <label class="form-check-label" for="showNoPair">No pair col?</label>
+            <select class="form-control" name="emoji_yesno" value="{{request.GET.emoji_yesno}}">
                 <option value="has_emoji">With emoji</option>
                 <option value="no_emoji">With no emoji</option>
                 <option value="any_emoji" selected>All emoji values</option>
@@ -45,8 +50,11 @@
             <tr class="table-primary">
                 <th scope="colgroup" colspan="2">Simplest way to make</th>
                 <th scope="col">Item</th>
-                <th scope="col">Time Created</th>
-                <th scope="col">Time Updated</th>
+                {% if request.GET.showNoPair %}
+                    <th scope="col">First unmatched</th>
+                {% endif %}
+                <th scope="col">Date Created</th>
+                <th scope="col">Date Updated</th>
             </tr>
         </thead>
         <tbody>
@@ -74,8 +82,13 @@
                             {{item}}
                         </a>
                     </td>
-                    <td>{{item.timeCreated|date:"M j, g:i a"}}</td>
-                    <td>{{item.timeUpdated|date:"M j, g:i a"}}</td>
+                    {% if request.GET.showNoPair %}
+                        <td>
+                            {{item.no_pair}}
+                        </td>
+                    {% endif %}
+                    <td>{{item.timeCreated|date:"M j, Y"}}</td>
+                    <td>{{item.timeUpdated|date:"M j, Y"}}</td>
                 </tr>
             {% endfor %}
         </tbody>

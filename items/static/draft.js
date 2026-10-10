@@ -23,10 +23,6 @@
         return texts.join("");
     }
 
-document.querySelectorAll(".item").forEach((itemDiv) => {
-    var emojiSpan = itemDiv.querySelector(".item-emoji")
-    updateEmoji(upperLevelText(itemDiv).trim(), emojiSpan.innerText.trim())
-})
 
 document.querySelectorAll(".instance").forEach((itemDiv) => {
     var emojiSpan = itemDiv.querySelector(".instance-emoji")
@@ -35,3 +31,8 @@ document.querySelectorAll(".instance").forEach((itemDiv) => {
 })
 
 navigator.clipboard.writeText(document.querySelector(".instance-text").innerText)
+
+document.querySelectorAll(".item").forEach((itemDiv) => {
+    var emojiSpan = itemDiv.querySelector(".item-emoji")
+    updateEmoji(upperLevelText(itemDiv).trim(), emojiSpan.innerText.trim())
+})

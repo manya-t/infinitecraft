@@ -82,7 +82,8 @@ def items(request):
     filter_exact = ("exact" in request.GET)
     filter_tier = request.GET.get("tier")
     filter_showNonsense = ("showNonsense" in request.GET)
-    filter_emoji = request.GET.get("emoji")
+    filter_emoji = request.GET.get("emoji").strip()
+    filter_emoji_yesno = request.GET.get("emoji_yesno")
     order = request.GET.get("order")
     if order is None:
         order = "tier"
@@ -96,15 +97,17 @@ def items(request):
             items = items.filter(name=filter_name)
         else:
             items = items.filter(name__contains=filter_name)
+    if filter_emoji is not None and filter_emoji != "":
+        items = items.filter(emoji=filter_emoji)
     if filter_tier is not None and filter_tier != "":
         items = items.filter(tier = filter_tier)
     if not filter_showNonsense:
         items = items.filter(isReal=True)
-    if filter_emoji == "has_emoji":
+    if filter_emoji_yesno == "has_emoji":
         items = items.filter(emoji__isnull=False)
-    elif filter_emoji == "no_emoji":
+    elif filter_emoji_yesno == "no_emoji":
         items = items.filter(emoji__isnull=True)
-
+    
     page = Paginator(items, 50).get_page(page_number)
     return render(request, "items.html", {"page" : page})
 
