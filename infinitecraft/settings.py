@@ -12,9 +12,13 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import os, dj_database_url
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load local environment overrides (e.g. DATABASE_URL) from a .env file.
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -77,7 +81,9 @@ WSGI_APPLICATION = 'infinitecraft.wsgi.application'
 environ_db_url = os.environ.get('DATABASE_URL')
 if environ_db_url:
     DATABASES = {
-        'default': dj_database_url.config(default=environ_db_url)
+        # conn_max_age reuses connections instead of reconnecting (with a full
+        # TLS handshake) every request — a big win over a high-latency link.
+        'default': dj_database_url.config(default=environ_db_url, conn_max_age=600)
     }
 else:
     DATABASES = {
